@@ -267,14 +267,6 @@ contains_cyrillic_input(const char *text) {
 static bool
 convert_input_key(const struct sc_key_event *event, struct sc_control_msg *msg,
                   enum sc_key_inject_mode key_inject_mode, uint32_t repeat) {
-    if (key_inject_mode == SC_KEY_INJECT_MODE_MIXED
-            && !(event->mods_state & (SC_MOD_LCTRL | SC_MOD_RCTRL))
-            && is_cyrillic_input(event->layout_keycode)) {
-        // SDL may report e.g. SDLK_A for the Russian ф key. Only the text
-        // event should reach the device. Keep Latin keycodes for shortcuts.
-        return false;
-    }
-
     msg->type = SC_CONTROL_MSG_TYPE_INJECT_KEYCODE;
 
     if (!convert_keycode(event->keycode, &msg->inject_keycode.keycode,
@@ -299,6 +291,24 @@ sc_key_processor_process_key(struct sc_key_processor *kp,
     (void) ack_to_wait;
 
     struct sc_keyboard_sdk *kb = DOWNCAST(kp);
+
+    if (kb->key_inject_mode == SC_KEY_INJECT_MODE_MIXED) {
+        unsigned scancode = event->scancode;
+        assert(scancode < SDL_SCANCODE_COUNT);
+        if (event->action == SC_ACTION_DOWN && !event->repeat) {
+            // SDL may report e.g. SDLK_A for the Russian ф key. Only the text
+            // event should reach the device. Keep Latin keycodes for Ctrl+A etc.
+            kb->text_keys[scancode] = is_cyrillic_input(event->layout_keycode)
+                && !(event->mods_state & (SC_MOD_LCTRL | SC_MOD_RCTRL));
+        }
+        // Pair up/down even if Ctrl or the active layout changes in between.
+        if (kb->text_keys[scancode]) {
+            if (event->action == SC_ACTION_UP) {
+                kb->text_keys[scancode] = false;
+            }
+            return;
+        }
+    }
 
     if (event->repeat) {
         if (!kb->forward_key_repeat) {
@@ -361,6 +371,7 @@ sc_keyboard_sdk_init(struct sc_keyboard_sdk *kb,
     kb->key_inject_mode = key_inject_mode;
     kb->forward_key_repeat = forward_key_repeat;
     kb->allow_text_paste = allow_text_paste;
+    memset(kb->text_keys, 0, sizeof(kb->text_keys));
 
     kb->repeat = 0;
 

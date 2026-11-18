@@ -2,26 +2,18 @@
 
 ## Install
 
-### From the official release
+### From the scrcpy-maronn release
 
-Download the [latest release]:
+Download and extract the archive for your computer:
 
- - [`scrcpy-win64-v5.0.1.zip`][direct-win64] (64-bit)  
-   <sub>SHA-256: `b12a2c4ee8be317422451fc7dcf8ee20a71b5ea7ef9ad73ddd825a25316227a5`</sub>
- - [`scrcpy-win32-v5.0.1.zip`][direct-win32] (32-bit)  
-   <sub>SHA-256: `0cb65ebf1bce892fa4d1502d699af0c7a1a7f24d7febcb9ef72894e3f23fc2ad`</sub>
- - [`scrcpy-winarm64-v5.0.1.zip`][direct-win32] (ARM 64-bit)  
-   <sub>SHA-256: `16c3fc2068df64946f670e3504b4752073ebae47a416a45b46e79a5ab19c689b`</sub>
+ - [scrcpy-win64-v5.0.2.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-win64-v5.0.2.zip) (64-bit)
+ - [scrcpy-win32-v5.0.2.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-win32-v5.0.2.zip) (32-bit)
+ - [scrcpy-winarm64-v5.0.2.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-winarm64-v5.0.2.zip) (ARM 64-bit)
 
-[latest release]: https://github.com/Genymobile/scrcpy/releases/latest
-[direct-win64]: https://github.com/Genymobile/scrcpy/releases/download/v5.0.1/scrcpy-win64-v5.0.1.zip
-[direct-win32]: https://github.com/Genymobile/scrcpy/releases/download/v5.0.1/scrcpy-win32-v5.0.1.zip
-[direct-winarm64]: https://github.com/Genymobile/scrcpy/releases/download/v5.0.1/scrcpy-winarm64-v5.0.1.zip
-
-and extract it.
+[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.2) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/SHA256SUMS.txt).
 
 
-### From a package manager
+### From a package manager (upstream scrcpy, not this fork)
 
 From [WinGet] (ADB and other dependencies will be installed alongside scrcpy):
 

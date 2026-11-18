@@ -2,13 +2,23 @@
 set -e
 
 BUILDDIR=build-auto
-PREBUILT_SERVER_URL=https://github.com/Genymobile/scrcpy/releases/download/v5.0.1/scrcpy-server-v5.0.1
-PREBUILT_SERVER_SHA256=764eb6f79811d5211fe9df341120882ba9994c7a61b897d7bf3fb662e53bc536
+VERSION=v5.0.2
+RELEASE_URL="https://github.com/flare-award/scrcpy-maronn/releases/download/$VERSION"
+SERVER="scrcpy-server-$VERSION"
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
 
 echo "[scrcpy] Downloading prebuilt server..."
-wget "$PREBUILT_SERVER_URL" -O scrcpy-server
+wget "$RELEASE_URL/$SERVER" -O "$tmpdir/$SERVER"
+wget "$RELEASE_URL/SHA256SUMS.txt" -O "$tmpdir/SHA256SUMS.txt"
 echo "[scrcpy] Verifying prebuilt server..."
-echo "$PREBUILT_SERVER_SHA256  scrcpy-server" | sha256sum --check
+(
+    cd "$tmpdir"
+    # Check only the server from this release, not any other manifest paths.
+    awk -v server="$SERVER" '$2 == server {print $1 "  " server}' SHA256SUMS.txt | sha256sum --check --strict
+)
+mv "$tmpdir/$SERVER" scrcpy-server
 
 echo "[scrcpy] Building client..."
 rm -rf "$BUILDDIR"

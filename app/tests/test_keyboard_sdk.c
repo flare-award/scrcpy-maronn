@@ -79,7 +79,7 @@ main(void) {
     expect_text(SC_CONTROL_MSG_TYPE_PASTE_TEXT, "A Ёж №1, её");
     key(&kb, SC_ACTION_DOWN, cyrillic_ef, SC_MOD_LCTRL);
     expect_key(AKEYCODE_A, AKEY_EVENT_ACTION_DOWN);
-    key(&kb, SC_ACTION_UP, cyrillic_ef, SC_MOD_LCTRL);
+    key(&kb, SC_ACTION_UP, cyrillic_ef, 0); // Ctrl released first
     expect_key(AKEYCODE_A, AKEY_EVENT_ACTION_UP);
 
     // RU -> EN: raw Latin keys and ordinary SDK text injection still work.

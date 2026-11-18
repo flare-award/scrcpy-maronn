@@ -167,9 +167,9 @@ Rebooting the device is necessary once this option is set.
 
 ### Special characters do not work
 
-The default text injection method is limited to ASCII characters. A trick allows
-to also inject some [accented characters][accented-characters],
-but that's all. See [#37].
+The default Android key map handles ASCII and some [accented characters][accented-characters],
+not arbitrary Unicode (see [#37]). In this fork, [Russian text](doc/keyboard.md#typing-in-russian)
+also works in SDK mode on Android 7+ when the app accepts paste.
 
 To avoid the problem, [change the keyboard mode to simulate a physical
 keyboard][hid].

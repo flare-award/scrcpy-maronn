@@ -65,6 +65,10 @@ public final class ClipboardManager {
     // Android 7+. Unlike an explicit clipboard transfer, typing must not replace the user's clipboard or sync a character to the host.
     public boolean withTemporaryText(String text, BooleanSupplier paste) {
         ClipData previous = manager.getPrimaryClip();
+        if (previous == null && manager.hasPrimaryClip()) {
+            // An unreadable clip cannot be restored.
+            return false;
+        }
         ClipData typed = ClipData.newPlainText(null, text);
         markClip(typed, typingOrigin, true);
         manager.setPrimaryClip(typed);

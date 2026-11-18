@@ -2,20 +2,16 @@
 
 ## Install
 
-### From the official release
+### From the scrcpy-maronn release
 
-Download a static build of the [latest release]:
+Download and extract the archive for your computer:
 
- - [`scrcpy-linux-x86_64-v5.0.1.tar.gz`][direct-linux-x86_64] (x86_64)  
-   <sub>SHA-256: `9f969d30cc574816077edecda65719c1c70b0aee1df1ba5fa00779ac07b8fd6e`</sub>
+ - [scrcpy-linux-x86_64-v5.0.2.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-linux-x86_64-v5.0.2.tar.gz) (x86_64)
 
-[latest release]: https://github.com/Genymobile/scrcpy/releases/latest
-[direct-linux-x86_64]: https://github.com/Genymobile/scrcpy/releases/download/v5.0.1/scrcpy-linux-x86_64-v5.0.1.tar.gz
-
-and extract it.
+[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.2) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/SHA256SUMS.txt).
 
 
-### From your package manager
+### From your package manager (upstream scrcpy, not this fork)
 
 <a href="https://repology.org/project/scrcpy/versions"><img src="https://repology.org/badge/vertical-allrepos/scrcpy.svg" alt="Packaging status" align="right"></a>
 
@@ -31,7 +27,7 @@ Scrcpy is packaged in several distributions and package managers:
 
 ### From an install script
 
-To install the latest release from `master`, follow this simplified process.
+To install this release from source, follow this simplified process.
 
 First, you need to install the required packages:
 
@@ -47,15 +43,16 @@ Then clone the repo and execute the installation script
 ([source](/install_release.sh)):
 
 ```bash
-git clone https://github.com/Genymobile/scrcpy
-cd scrcpy
+git clone --branch v5.0.2 https://github.com/flare-award/scrcpy-maronn
+cd scrcpy-maronn
 ./install_release.sh
 ```
 
-When a new release is out, update the repo and reinstall:
+When a new release is out, select its tag and reinstall:
 
 ```bash
-git pull
+git fetch --tags
+git checkout v5.0.2  # replace with the new version tag
 ./install_release.sh
 ```
 

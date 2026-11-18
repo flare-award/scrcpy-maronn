@@ -15,8 +15,6 @@ env:
 jobs:
   test-scrcpy-server:
     runs-on: ubuntu-latest
-    env:
-      GRADLE: gradle  # use native gradle instead of ./gradlew in scripts
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -32,8 +30,6 @@ jobs:
 
   build-scrcpy-server:
     runs-on: ubuntu-latest
-    env:
-      GRADLE: gradle  # use native gradle instead of ./gradlew in scripts
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

@@ -649,7 +649,8 @@ static const struct sc_option options[] = {
                 "clipboard to the device clipboard before injecting Ctrl+v, "
                 "and the device clipboard to the computer clipboard whenever "
                 "it changes.\n"
-                "This option disables this automatic synchronization."
+                "This option disables this automatic synchronization and the "
+                "clipboard fallback for typing Cyrillic in SDK mode."
     },
     {
         .longopt_id = OPT_NO_DOWNSIZE_ON_ERROR,
