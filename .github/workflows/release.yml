@@ -1,6 +1,8 @@
 name: Build
 
 on:
+  push:
+    tags: ['v[0-9]*']
   workflow_dispatch:
     inputs:
       name:
@@ -579,6 +581,9 @@ jobs:
 
   release:
     needs:
+      - test-client
+      - test-scrcpy-server
+      - test-build-scrcpy-server-without-gradle
       - build-scrcpy-server
       - package-linux-x86_64
       - package-win32
@@ -644,3 +649,25 @@ jobs:
         with:
           name: scrcpy-release-${{ env.VERSION }}
           path: release/output
+
+  publish:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
+        with:
+          name: scrcpy-release-${{ env.VERSION }}
+          path: release/output
+      - name: Verify and publish the tagged binaries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          test "$VERSION" = "v$(sed -n "s/^[[:space:]]*version: '\([^']*\)',/\1/p" meson.build)"
+          (cd release/output && sha256sum --check --strict SHA256SUMS.txt)
+          gh release create "$VERSION" release/output/* --verify-tag \
+            --title "scrcpy-maronn $VERSION" --notes-file "release/notes/$VERSION.md"
