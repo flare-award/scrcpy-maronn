@@ -265,7 +265,7 @@ static const struct sc_option options[] = {
         .argdesc = "hexcolor",
         .text = "Set the background color, encoded as hexadecimal color code "
                 "(#RGB or #RRGGBB).\n"
-                "Default is #222 (dark gray).",
+                "Default is #000000 (black).",
     },
     {
         .longopt_id = OPT_CAMERA_AR,

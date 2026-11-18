@@ -110,7 +110,7 @@ public final class Device {
         if (clipboardManager == null) {
             return null;
         }
-        CharSequence s = clipboardManager.getText();
+        CharSequence s = clipboardManager.getText(false);
         if (s == null) {
             return null;
         }

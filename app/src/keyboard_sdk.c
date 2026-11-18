@@ -1,7 +1,6 @@
 #include "keyboard_sdk.h"
 
 #include <assert.h>
-#include <ctype.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -251,8 +250,31 @@ convert_meta_state(uint16_t mod) {
 }
 
 static bool
+is_cyrillic_input(uint32_t c) {
+    return (c >= 0x0400 && c <= 0x04ff) || c == 0x2116; // Cyrillic or №
+}
+
+static bool
+contains_cyrillic_input(const char *text) {
+    while (*text) {
+        if (is_cyrillic_input(SDL_StepUTF8(&text, NULL))) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool
 convert_input_key(const struct sc_key_event *event, struct sc_control_msg *msg,
                   enum sc_key_inject_mode key_inject_mode, uint32_t repeat) {
+    if (key_inject_mode == SC_KEY_INJECT_MODE_MIXED
+            && !(event->mods_state & (SC_MOD_LCTRL | SC_MOD_RCTRL))
+            && is_cyrillic_input(event->layout_keycode)) {
+        // SDL may report e.g. SDLK_A for the Russian ф key. Only the text
+        // event should reach the device. Keep Latin keycodes for shortcuts.
+        return false;
+    }
+
     msg->type = SC_CONTROL_MSG_TYPE_INJECT_KEYCODE;
 
     if (!convert_keycode(event->keycode, &msg->inject_keycode.keycode,
@@ -305,18 +327,21 @@ sc_key_processor_process_text(struct sc_key_processor *kp,
         return;
     }
 
-    if (kb->key_inject_mode == SC_KEY_INJECT_MODE_MIXED) {
-        char c = event->text[0];
-        if (isalpha(c) || c == ' ') {
-            assert(event->text[1] == '\0');
-            // Letters and space are handled as raw key events
-            return;
-        }
+    const char *text = event->text;
+    char c = text[0];
+    if (!c) {
+        return;
+    }
+    if (kb->key_inject_mode == SC_KEY_INJECT_MODE_MIXED && !text[1]
+            && ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == ' ')) {
+        // Only single ASCII letters and space are handled as raw key events.
+        return;
     }
 
     struct sc_control_msg msg;
-    msg.type = SC_CONTROL_MSG_TYPE_INJECT_TEXT;
-    msg.inject_text.text = strdup(event->text);
+    msg.type = kb->allow_text_paste && contains_cyrillic_input(text)
+             ? SC_CONTROL_MSG_TYPE_PASTE_TEXT : SC_CONTROL_MSG_TYPE_INJECT_TEXT;
+    msg.inject_text.text = strdup(text);
     if (!msg.inject_text.text) {
         LOGW("Could not strdup input text");
         return;
@@ -331,10 +356,11 @@ void
 sc_keyboard_sdk_init(struct sc_keyboard_sdk *kb,
                      struct sc_controller *controller,
                      enum sc_key_inject_mode key_inject_mode,
-                     bool forward_key_repeat) {
+                     bool forward_key_repeat, bool allow_text_paste) {
     kb->controller = controller;
     kb->key_inject_mode = key_inject_mode;
     kb->forward_key_repeat = forward_key_repeat;
+    kb->allow_text_paste = allow_text_paste;
 
     kb->repeat = 0;
 

@@ -151,9 +151,9 @@ public class Controller implements AsyncProcessor, VirtualDisplayListener {
                         // This is a notification for the change we are currently applying, ignore it
                         return;
                     }
-                    String text = Device.getClipboardText();
+                    CharSequence text = clipboardManager.getText(true);
                     if (text != null) {
-                        DeviceMessage msg = DeviceMessage.createClipboard(text);
+                        DeviceMessage msg = DeviceMessage.createClipboard(text.toString());
                         sender.send(msg);
                     }
                 });
@@ -351,6 +351,11 @@ public class Controller implements AsyncProcessor, VirtualDisplayListener {
                 case ControlMessage.TYPE_INJECT_TEXT:
                     if (supportsInputEvents) {
                         injectText(msg.getText());
+                    }
+                    return true;
+                case ControlMessage.TYPE_PASTE_TEXT:
+                    if (supportsInputEvents) {
+                        pasteTypedText(msg.getText());
                     }
                     return true;
                 case ControlMessage.TYPE_INJECT_TOUCH_EVENT:
@@ -682,6 +687,28 @@ public class Controller implements AsyncProcessor, VirtualDisplayListener {
             scheduleDisplayPowerOff(displayId);
         }
         return pressReleaseKeycode(KeyEvent.KEYCODE_POWER, Device.INJECT_MODE_ASYNC);
+    }
+
+    private void pasteTypedText(String text) {
+        ClipboardManager clipboard = ServiceManager.getClipboardManager();
+        if (Build.VERSION.SDK_INT < AndroidVersions.API_24_ANDROID_7_0 || clipboard == null || !clipboardAutosync) {
+            // No PASTE key or clipboard. Keep the original key-map behavior.
+            injectText(text);
+            return;
+        }
+        int target = getActionDisplayId();
+        if (target == Device.DISPLAY_ID_NONE) {
+            return;
+        }
+        try {
+            // Do not change the clipboard again until the app has processed the paste key.
+            if (!clipboard.withTemporaryText(text,
+                    () -> Device.pressReleaseKeycode(KeyEvent.KEYCODE_PASTE, target, Device.INJECT_MODE_WAIT_FOR_FINISH))) {
+                Ln.w("Could not paste typed text; try --keyboard=uhid");
+            }
+        } catch (RuntimeException e) {
+            Ln.w("Device clipboard unavailable for typing", e);
+        }
     }
 
     private void getClipboard(int copyKey) {

@@ -60,6 +60,14 @@ public class ControlMessageReaderTest {
     }
 
     @Test
+    public void testParsePasteTypedText() throws IOException {
+        byte[] packet = {23, 0, 0, 0, 4, (byte) 0xd1, (byte) 0x91, (byte) 0xd0, (byte) 0x96};
+        ControlMessage event = new ControlMessageReader(new ByteArrayInputStream(packet)).read();
+        Assert.assertEquals(ControlMessage.TYPE_PASTE_TEXT, event.getType());
+        Assert.assertEquals("ёЖ", event.getText());
+    }
+
+    @Test
     public void testParseLongTextEvent() throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(bos);

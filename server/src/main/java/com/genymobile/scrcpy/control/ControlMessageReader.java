@@ -28,7 +28,8 @@ public class ControlMessageReader {
             case ControlMessage.TYPE_INJECT_KEYCODE:
                 return parseInjectKeycode();
             case ControlMessage.TYPE_INJECT_TEXT:
-                return parseInjectText();
+            case ControlMessage.TYPE_PASTE_TEXT:
+                return ControlMessage.createText(type, parseString());
             case ControlMessage.TYPE_INJECT_TOUCH_EVENT:
                 return parseInjectTouchEvent();
             case ControlMessage.TYPE_INJECT_SCROLL_EVENT:
@@ -101,11 +102,6 @@ public class ControlMessageReader {
         byte[] data = new byte[len];
         dis.readFully(data);
         return data;
-    }
-
-    private ControlMessage parseInjectText() throws IOException {
-        String text = parseString();
-        return ControlMessage.createInjectText(text);
     }
 
     private ControlMessage parseInjectTouchEvent() throws IOException {

@@ -77,6 +77,7 @@ static void test_options(void) {
     assert(opts->video_bit_rate == 5000000);
     assert(!strcmp(opts->crop, "100:200:300:400"));
     assert(opts->fullscreen);
+    assert(opts->background_color == 0x000000);
     assert(!strcmp(opts->max_fps, "30"));
     assert(opts->max_size == 1024);
     assert(opts->port_range.first == 1234);
@@ -106,6 +107,7 @@ static void test_options2(void) {
     char *argv[] = {
         "scrcpy",
         "--no-control",
+        "--background-color=#234",
         "--no-playback",
         "--record", "file.mp4", // cannot enable --no-playback without recording
     };
@@ -115,6 +117,7 @@ static void test_options2(void) {
 
     const struct scrcpy_options *opts = &args.opts;
     assert(!opts->control);
+    assert(opts->background_color == 0x223344);
     assert(!opts->video_playback);
     assert(!opts->audio_playback);
     assert(!strcmp(opts->record_filename, "file.mp4"));

@@ -30,6 +30,7 @@ public final class ControlMessage {
     public static final int TYPE_CAMERA_ZOOM_OUT = 20;
     public static final int TYPE_RESIZE_DISPLAY = 21;
     public static final int TYPE_SCAN_FILE = 22;
+    public static final int TYPE_PASTE_TEXT = 23;
 
     public static final long SEQUENCE_INVALID = 0;
 
@@ -74,9 +75,10 @@ public final class ControlMessage {
         return msg;
     }
 
-    public static ControlMessage createInjectText(String text) {
+    public static ControlMessage createText(int type, String text) {
+        assert type == TYPE_INJECT_TEXT || type == TYPE_PASTE_TEXT;
         ControlMessage msg = new ControlMessage();
-        msg.type = TYPE_INJECT_TEXT;
+        msg.type = type;
         msg.text = text;
         return msg;
     }

@@ -266,7 +266,7 @@ sc_screen_render(struct sc_screen *screen, bool update_content_rect) {
 
     SDL_Renderer *renderer = screen->renderer;
     struct sc_screen_bg_color bg = screen->bg;
-    SDL_SetRenderDrawColor(renderer, bg.r, bg.g, bg.b, 0);
+    SDL_SetRenderDrawColor(renderer, bg.r, bg.g, bg.b, SDL_ALPHA_OPAQUE);
     sc_sdl_render_clear(renderer);
 
     SDL_Texture *texture = screen->is_icon_active
