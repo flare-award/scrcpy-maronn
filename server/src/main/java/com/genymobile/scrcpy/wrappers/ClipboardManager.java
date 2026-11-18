@@ -3,6 +3,7 @@ package com.genymobile.scrcpy.wrappers;
 import com.genymobile.scrcpy.AndroidVersions;
 import com.genymobile.scrcpy.FakeContext;
 
+import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -10,7 +11,6 @@ import android.os.Build;
 import android.os.PersistableBundle;
 
 import java.util.UUID;
-import java.util.function.BooleanSupplier;
 
 public final class ClipboardManager {
     // Clipboard notifications are asynchronous: they can arrive after a paste or restore completes.
@@ -48,10 +48,12 @@ public final class ClipboardManager {
         return clipData.getItemAt(0).getText();
     }
 
+    @TargetApi(AndroidVersions.API_24_ANDROID_7_0)
     private static String getOrigin(ClipDescription description) {
         return description != null && description.getExtras() != null ? description.getExtras().getString(EXTRA_ORIGIN) : null;
     }
 
+    @TargetApi(AndroidVersions.API_24_ANDROID_7_0)
     private static void markClip(ClipData clip, String origin, boolean sensitive) {
         ClipDescription description = clip.getDescription();
         PersistableBundle extras = description.getExtras() != null ? new PersistableBundle(description.getExtras()) : new PersistableBundle();
@@ -62,8 +64,13 @@ public final class ClipboardManager {
         description.setExtras(extras);
     }
 
+    public interface PasteAction {
+        boolean paste();
+    }
+
     // Android 7+. Unlike an explicit clipboard transfer, typing must not replace the user's clipboard or sync a character to the host.
-    public boolean withTemporaryText(String text, BooleanSupplier paste) {
+    @TargetApi(AndroidVersions.API_24_ANDROID_7_0)
+    public boolean withTemporaryText(String text, PasteAction action) {
         ClipData previous = manager.getPrimaryClip();
         if (previous == null && manager.hasPrimaryClip()) {
             // An unreadable clip cannot be restored.
@@ -74,7 +81,7 @@ public final class ClipboardManager {
         manager.setPrimaryClip(typed);
         try {
             // Some devices silently reject clipboard writes. Never paste the old contents instead.
-            return typingOrigin.equals(getOrigin(manager.getPrimaryClipDescription())) && paste.getAsBoolean();
+            return typingOrigin.equals(getOrigin(manager.getPrimaryClipDescription())) && action.paste();
         } finally {
             // Do not overwrite a new clip copied by the user or the receiving app during the paste.
             if (typingOrigin.equals(getOrigin(manager.getPrimaryClipDescription()))) {

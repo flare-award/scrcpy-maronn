@@ -6,11 +6,11 @@
 
 Download and extract the archive for your computer:
 
- - [scrcpy-win64-v5.0.2.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-win64-v5.0.2.zip) (64-bit)
- - [scrcpy-win32-v5.0.2.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-win32-v5.0.2.zip) (32-bit)
- - [scrcpy-winarm64-v5.0.2.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-winarm64-v5.0.2.zip) (ARM 64-bit)
+ - [scrcpy-win64-v5.0.3.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-win64-v5.0.3.zip) (64-bit)
+ - [scrcpy-win32-v5.0.3.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-win32-v5.0.3.zip) (32-bit)
+ - [scrcpy-winarm64-v5.0.3.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-winarm64-v5.0.3.zip) (ARM 64-bit)
 
-[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.2) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/SHA256SUMS.txt).
+[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.3) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/SHA256SUMS.txt).
 
 
 ### From a package manager (upstream scrcpy, not this fork)

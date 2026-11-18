@@ -6,10 +6,10 @@
 
 Download and extract the archive for your computer:
 
- - [scrcpy-macos-aarch64-v5.0.2.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-macos-aarch64-v5.0.2.tar.gz) (Apple Silicon)
- - [scrcpy-macos-x86_64-v5.0.2.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-macos-x86_64-v5.0.2.tar.gz) (Intel)
+ - [scrcpy-macos-aarch64-v5.0.3.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-macos-aarch64-v5.0.3.tar.gz) (Apple Silicon)
+ - [scrcpy-macos-x86_64-v5.0.3.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-macos-x86_64-v5.0.3.tar.gz) (Intel)
 
-[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.2) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/SHA256SUMS.txt).
+[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.3) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/SHA256SUMS.txt).
 
 
 ### From a package manager (upstream scrcpy, not this fork)

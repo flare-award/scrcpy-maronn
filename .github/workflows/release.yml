@@ -13,7 +13,7 @@ on:
         type: boolean
         default: false
       release_tag:
-        description: 'Build and publish an existing tag, for example v5.0.2 (optional)'
+        description: 'Build and publish an existing tag, for example v5.0.3 (optional)'
         type: string
 
 permissions:
@@ -46,7 +46,7 @@ jobs:
           set -o pipefail
           if ! release/test_server.sh 2>&1 | tee "$RUNNER_TEMP/server-check.log"; then
             # Surface the actionable lint/test errors on the PR and run page.
-            grep -E 'Error:|FAILED|^> |^Execution failed' "$RUNNER_TEMP/server-check.log" | tail -20 | sed 's/^/::error::/' || true
+            grep -E 'Error:|FAILED|^> [^T]|^Execution failed' "$RUNNER_TEMP/server-check.log" | tail -20 | sed 's/^/::error::/' || true
             exit 1
           fi
 
@@ -84,6 +84,17 @@ jobs:
 
       - name: Build without gradle
         run: server/build_without_gradle.sh
+
+      - name: Enable emulator acceleration
+        run: sudo chmod a+rw /dev/kvm
+
+      - name: Type into an Android editor and check clipboard restoration
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
+        with:
+          api-level: 30
+          arch: x86_64
+          disable-spellchecker: true
+          script: python3 release/test_typing.py build_manual/scrcpy-server $(sed -n 's/^SCRCPY_VERSION_NAME=//p' server/build_without_gradle.sh)
 
   test-client:
     runs-on: ubuntu-latest
