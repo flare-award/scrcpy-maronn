@@ -1,18 +1,18 @@
-# scrcpy-maronn (v5.0.2)
+# scrcpy-maronn (v5.0.3)
 
 <img src="app/data/scrcpy.svg" width="128" height="128" alt="scrcpy" align="right" />
 
 **scrcpy-maronn** — форк [Genymobile/scrcpy](https://github.com/Genymobile/scrcpy).
 Владелец и репозиторий этой версии: [flare-award/scrcpy-maronn](https://github.com/flare-award/scrcpy-maronn).
-Все изменения выпуска v5.0.2 относительно оригинального scrcpy v5.0.1 внёс
+Все изменения выпуска v5.0.3 относительно оригинального scrcpy v5.0.1 внёс
 ИИ-агент Arena.ai по просьбе владельца. Авторы исходного scrcpy — Genymobile и
 Romain Vimont. Сборки форка не являются официальными релизами Genymobile.
 
-**[Скачать scrcpy-maronn v5.0.2](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.2)** ·
-[Windows 64-бит (ZIP)](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-win64-v5.0.2.zip).
+**[Скачать scrcpy-maronn v5.0.3](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.3)** ·
+[Windows 64-бит (ZIP)](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-win64-v5.0.3.zip).
 Распакуйте архив целиком и запустите `scrcpy.exe`.
 
-## Что нового в v5.0.2
+## Что нового в v5.0.3
 
 - **Русская раскладка компьютера.** Запустите `scrcpy` без параметров, откройте
   поле ввода на телефоне и переключите EN → RU привычным сочетанием на ПК.

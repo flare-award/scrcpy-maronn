@@ -2,7 +2,7 @@
 set -e
 
 BUILDDIR=build-auto
-VERSION=v5.0.2
+VERSION=v5.0.3
 RELEASE_URL="https://github.com/flare-award/scrcpy-maronn/releases/download/$VERSION"
 SERVER="scrcpy-server-$VERSION"
 
