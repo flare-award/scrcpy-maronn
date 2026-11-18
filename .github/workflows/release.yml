@@ -7,33 +7,26 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Label for a build without publication (default is ref name)'
-      checks_only:
-        description: 'Run the checks without building release archives'
-        type: boolean
-        default: false
-      release_tag:
-        description: 'Build and publish an existing tag, for example v5.0.3 (optional)'
-        type: string
+        description: 'Archive label, e.g. v5.0.3 (default is ref name)'
+      operation:
+        description: 'Check only, build artifacts, or publish a checked release'
+        type: choice
+        default: build
+        options: [check, build, publish]
 
 permissions:
   contents: read
 
 env:
   # $VERSION is used by release scripts
-  VERSION: ${{ inputs.release_tag || inputs.name || github.ref_name }}
-  BUILD_REF: ${{ inputs.release_tag && format('refs/tags/{0}', inputs.release_tag) || github.sha }}
+  VERSION: ${{ inputs.name || github.ref_name }}
 
 jobs:
   test-scrcpy-server:
     runs-on: ubuntu-latest
     steps:
-      # Manual publication must build the requested tag, not the dispatch branch.
-      - &checkout
-        name: Checkout code
+      - name: Checkout code
         uses: actions/checkout@v6
-        with:
-          ref: ${{ env.BUILD_REF }}
 
       - name: Setup JDK
         uses: actions/setup-java@v5
@@ -51,10 +44,11 @@ jobs:
           fi
 
   build-scrcpy-server:
-    if: github.event_name != 'pull_request' && !inputs.checks_only
+    if: github.event_name != 'pull_request' && inputs.operation != 'check'
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Setup JDK
         uses: actions/setup-java@v5
@@ -74,7 +68,8 @@ jobs:
   test-build-scrcpy-server-without-gradle:
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Setup JDK
         uses: actions/setup-java@v5
@@ -99,7 +94,8 @@ jobs:
   test-client:
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
         # Same as build-linux-x86_64
       - name: Install dependencies
@@ -127,7 +123,7 @@ jobs:
           release/test_client.sh
 
   build-linux-x86_64:
-    if: github.event_name != 'pull_request' && !inputs.checks_only
+    if: github.event_name != 'pull_request' && inputs.operation != 'check'
     runs-on: ubuntu-22.04
     steps:
       - name: Check architecture
@@ -139,7 +135,8 @@ jobs:
                 exit 1
             fi
 
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
         # https://wiki.libsdl.org/SDL3/README-linux#build-dependencies
       - name: Install dependencies
@@ -173,10 +170,11 @@ jobs:
           path: release/work/build-linux-x86_64/dist-tar/
 
   build-win32:
-    if: github.event_name != 'pull_request' && !inputs.checks_only
+    if: github.event_name != 'pull_request' && inputs.operation != 'check'
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -202,10 +200,11 @@ jobs:
           path: release/work/build-win32/dist-tar/
 
   build-win64:
-    if: github.event_name != 'pull_request' && !inputs.checks_only
+    if: github.event_name != 'pull_request' && inputs.operation != 'check'
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -231,13 +230,14 @@ jobs:
           path: release/work/build-win64/dist-tar/
 
   build-winarm64:
-    if: github.event_name != 'pull_request' && !inputs.checks_only
+    if: github.event_name != 'pull_request' && inputs.operation != 'check'
     runs-on: windows-11-arm
     defaults:
       run:
         shell: 'msys2 {0}'
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
@@ -305,7 +305,7 @@ jobs:
           path: release/work/build-winarm64/dist-tar/
 
   build-macos-aarch64:
-    if: github.event_name != 'pull_request' && !inputs.checks_only
+    if: github.event_name != 'pull_request' && inputs.operation != 'check'
     runs-on: macos-latest
     steps:
       - name: Check architecture
@@ -317,7 +317,8 @@ jobs:
                 exit 1
             fi
 
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -348,7 +349,7 @@ jobs:
           path: release/work/build-macos-aarch64/dist-tar/
 
   build-macos-x86_64:
-    if: github.event_name != 'pull_request' && !inputs.checks_only
+    if: github.event_name != 'pull_request' && inputs.operation != 'check'
     runs-on: macos-15-intel
     steps:
       - name: Check architecture
@@ -360,7 +361,8 @@ jobs:
                 exit 1
             fi
 
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Install dependencies
         run: brew install meson nasm libiconv zlib automake
@@ -396,7 +398,8 @@ jobs:
       - build-linux-x86_64
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -431,7 +434,8 @@ jobs:
       - build-win32
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -466,7 +470,8 @@ jobs:
       - build-win64
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -501,7 +506,8 @@ jobs:
       - build-winarm64
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -536,7 +542,8 @@ jobs:
       - build-macos-aarch64
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -571,7 +578,8 @@ jobs:
       - build-macos-x86_64
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -614,7 +622,8 @@ jobs:
       - package-macos-x86_64
     runs-on: ubuntu-latest
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -671,13 +680,14 @@ jobs:
           path: release/output
 
   publish:
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || inputs.release_tag
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || inputs.operation == 'publish'
     needs: release
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - *checkout
+      - name: Checkout code
+        uses: actions/checkout@v6
       - uses: actions/download-artifact@v8
         with:
           name: scrcpy-release-${{ env.VERSION }}
@@ -686,8 +696,27 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          set -eu
-          test "$VERSION" = "v$(sed -n "s/^[[:space:]]*version: '\([^']*\)',/\1/p" meson.build)"
-          (cd release/output && sha256sum --check --strict SHA256SUMS.txt)
-          gh release create "$VERSION" release/output/* --verify-tag \
+          set -euo pipefail
+          version=$(sed -n "s/^[[:space:]]*version: '\([^']*\)',/\1/p" meson.build)
+          test "$VERSION" = "v$version"
+          (
+            cd release/output
+            sha256sum --check --strict SHA256SUMS.txt
+            for archive in scrcpy-win*.zip; do
+              unzip -tq "$archive"
+              unzip -p "$archive" "${archive%.zip}/scrcpy-server" | cmp - "scrcpy-server-$VERSION"
+            done
+            for archive in scrcpy-*.tar.gz; do
+              tar xOzf "$archive" "${archive%.tar.gz}/scrcpy-server" | cmp - "scrcpy-server-$VERSION"
+            done
+          )
+          if [[ "$GITHUB_REF" == "refs/tags/$VERSION" ]]; then
+            tag_args=(--verify-tag)
+          else
+            # Create the tag only after the build passed, and never attach these
+            # binaries to a tag that might already point to another commit.
+            test -z "$(git ls-remote origin "refs/tags/$VERSION")"
+            tag_args=(--target "$GITHUB_SHA")
+          fi
+          gh release create "$VERSION" release/output/* "${tag_args[@]}" \
             --title "scrcpy-maronn $VERSION" --notes-file "release/notes/$VERSION.md"
