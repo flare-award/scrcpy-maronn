@@ -8,6 +8,10 @@ on:
     inputs:
       name:
         description: 'Label for a build without publication (default is ref name)'
+      checks_only:
+        description: 'Run the checks without building release archives'
+        type: boolean
+        default: false
       release_tag:
         description: 'Build and publish an existing tag, for example v5.0.2 (optional)'
         type: string
@@ -47,7 +51,7 @@ jobs:
           fi
 
   build-scrcpy-server:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && !inputs.checks_only
     runs-on: ubuntu-latest
     steps:
       - *checkout
@@ -112,7 +116,7 @@ jobs:
           release/test_client.sh
 
   build-linux-x86_64:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && !inputs.checks_only
     runs-on: ubuntu-22.04
     steps:
       - name: Check architecture
@@ -158,7 +162,7 @@ jobs:
           path: release/work/build-linux-x86_64/dist-tar/
 
   build-win32:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && !inputs.checks_only
     runs-on: ubuntu-latest
     steps:
       - *checkout
@@ -187,7 +191,7 @@ jobs:
           path: release/work/build-win32/dist-tar/
 
   build-win64:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && !inputs.checks_only
     runs-on: ubuntu-latest
     steps:
       - *checkout
@@ -216,7 +220,7 @@ jobs:
           path: release/work/build-win64/dist-tar/
 
   build-winarm64:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && !inputs.checks_only
     runs-on: windows-11-arm
     defaults:
       run:
@@ -290,7 +294,7 @@ jobs:
           path: release/work/build-winarm64/dist-tar/
 
   build-macos-aarch64:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && !inputs.checks_only
     runs-on: macos-latest
     steps:
       - name: Check architecture
@@ -333,7 +337,7 @@ jobs:
           path: release/work/build-macos-aarch64/dist-tar/
 
   build-macos-x86_64:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && !inputs.checks_only
     runs-on: macos-15-intel
     steps:
       - name: Check architecture
