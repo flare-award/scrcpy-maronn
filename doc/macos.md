@@ -6,7 +6,9 @@
 
 Download and extract the archive for your computer:
 
- - [scrcpy-macos-aarch64-v5.0.3.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-macos-aarch64-v5.0.3.tar.gz) (Apple Silicon)
+ - Apple Silicon: look for `scrcpy-macos-aarch64-v5.0.3.tar.gz` in the
+   [release assets](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.3).
+   If no native archive is listed, [build this version from source](build.md).
  - [scrcpy-macos-x86_64-v5.0.3.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-macos-x86_64-v5.0.3.tar.gz) (Intel)
 
 [Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.3) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/SHA256SUMS.txt).
