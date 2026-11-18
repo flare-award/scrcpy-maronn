@@ -6,18 +6,26 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Version name (default is ref name)'
+        description: 'Label for a build without publication (default is ref name)'
+      release_tag:
+        description: 'Build and publish an existing tag, for example v5.0.2 (optional)'
+        type: string
 
 env:
   # $VERSION is used by release scripts
-  VERSION: ${{ github.event.inputs.name || github.ref_name }}
+  VERSION: ${{ inputs.release_tag || inputs.name || github.ref_name }}
+  BUILD_REF: ${{ inputs.release_tag && format('refs/tags/{0}', inputs.release_tag) || github.sha }}
 
 jobs:
   test-scrcpy-server:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      # Manual publication must build the requested tag, not the dispatch branch.
+      - &checkout
+        name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ env.BUILD_REF }}
 
       - name: Setup JDK
         uses: actions/setup-java@v5
@@ -31,8 +39,7 @@ jobs:
   build-scrcpy-server:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Setup JDK
         uses: actions/setup-java@v5
@@ -52,8 +59,7 @@ jobs:
   test-build-scrcpy-server-without-gradle:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Setup JDK
         uses: actions/setup-java@v5
@@ -67,8 +73,7 @@ jobs:
   test-client:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
         # Same as build-linux-x86_64
       - name: Install dependencies
@@ -107,8 +112,7 @@ jobs:
                 exit 1
             fi
 
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
         # https://wiki.libsdl.org/SDL3/README-linux#build-dependencies
       - name: Install dependencies
@@ -144,8 +148,7 @@ jobs:
   build-win32:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Install dependencies
         run: |
@@ -173,8 +176,7 @@ jobs:
   build-win64:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Install dependencies
         run: |
@@ -205,8 +207,7 @@ jobs:
       run:
         shell: 'msys2 {0}'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
@@ -285,8 +286,7 @@ jobs:
                 exit 1
             fi
 
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Install dependencies
         run: |
@@ -328,8 +328,7 @@ jobs:
                 exit 1
             fi
 
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Install dependencies
         run: brew install meson nasm libiconv zlib automake
@@ -365,8 +364,7 @@ jobs:
       - build-linux-x86_64
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -401,8 +399,7 @@ jobs:
       - build-win32
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -437,8 +434,7 @@ jobs:
       - build-win64
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -473,8 +469,7 @@ jobs:
       - build-winarm64
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -509,8 +504,7 @@ jobs:
       - build-macos-aarch64
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -545,8 +539,7 @@ jobs:
       - build-macos-x86_64
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -589,8 +582,7 @@ jobs:
       - package-macos-x86_64
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - *checkout
 
       - name: Download scrcpy-server
         uses: actions/download-artifact@v8
@@ -647,13 +639,13 @@ jobs:
           path: release/output
 
   publish:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || inputs.release_tag
     needs: release
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - *checkout
       - uses: actions/download-artifact@v8
         with:
           name: scrcpy-release-${{ env.VERSION }}
