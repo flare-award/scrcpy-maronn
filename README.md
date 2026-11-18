@@ -11,6 +11,7 @@ Romain Vimont. Сборки форка не являются официальн�
 **[Скачать scrcpy-maronn v5.0.3](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.3)** ·
 [Windows 64-бит (ZIP)](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-win64-v5.0.3.zip).
 Распакуйте архив целиком и запустите `scrcpy.exe`.
+[Контрольные суммы SHA-256](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/SHA256SUMS.txt).
 
 ## Что нового в v5.0.3
 

@@ -6,7 +6,8 @@
 
 Download and extract the archive for your computer:
 
- - [scrcpy-linux-x86_64-v5.0.3.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-linux-x86_64-v5.0.3.tar.gz) (x86_64)
+ - [scrcpy-linux-x86_64-v5.0.3.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-linux-x86_64-v5.0.3.tar.gz) (x86_64)<br>
+   <sub>SHA-256: `a34b06bb100f620106920bc65bd357bbafb9e31a106dbbe23e5794c766bf58c9`</sub>
 
 [Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.3) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/SHA256SUMS.txt).
 
