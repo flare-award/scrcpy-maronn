@@ -20,12 +20,14 @@ struct sc_keyboard_sdk {
 
     enum sc_key_inject_mode key_inject_mode;
     bool forward_key_repeat;
+    bool allow_text_paste;
+    bool text_keys[SDL_SCANCODE_COUNT]; // keys handled by SDL text events until release
 };
 
 void
 sc_keyboard_sdk_init(struct sc_keyboard_sdk *kb,
                      struct sc_controller *controller,
                      enum sc_key_inject_mode key_inject_mode,
-                     bool forward_key_repeat);
+                     bool forward_key_repeat, bool allow_text_paste);
 
 #endif

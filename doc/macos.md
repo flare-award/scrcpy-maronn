@@ -2,23 +2,17 @@
 
 ## Install
 
-### From the official release
+### From the scrcpy-maronn release
 
-Download a static build of the [latest release]:
+Download and extract the archive for your computer:
 
- - [`scrcpy-macos-aarch64-v5.0.1.tar.gz`][direct-macos-aarch64] (aarch64)  
-   <sub>SHA-256: `33611e51977a8289e2e124b220f727895181ef2eb9060e0987a4dc2db9cf0d6b`</sub>
- - [`scrcpy-macos-x86_64-v5.0.1.tar.gz`][direct-macos-x86_64] (x86_64)  
-   <sub>SHA-256: `31a5467a9e907f162b093267cbbab1276b15c6e709c2ea8159566a8d165beb50`</sub>
+ - [scrcpy-macos-aarch64-v5.0.2.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-macos-aarch64-v5.0.2.tar.gz) (Apple Silicon)
+ - [scrcpy-macos-x86_64-v5.0.2.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-macos-x86_64-v5.0.2.tar.gz) (Intel)
 
-[latest release]: https://github.com/Genymobile/scrcpy/releases/latest
-[direct-macos-aarch64]: https://github.com/Genymobile/scrcpy/releases/download/v5.0.1/scrcpy-macos-aarch64-v5.0.1.tar.gz
-[direct-macos-x86_64]: https://github.com/Genymobile/scrcpy/releases/download/v5.0.1/scrcpy-macos-x86_64-v5.0.1.tar.gz
-
-and extract it.
+[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.2) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/SHA256SUMS.txt).
 
 
-### From a package manager
+### From a package manager (upstream scrcpy, not this fork)
 
 Scrcpy is available in [Homebrew]:
 

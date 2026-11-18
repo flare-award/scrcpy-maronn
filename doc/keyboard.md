@@ -15,8 +15,9 @@ use [`uhid`](#uhid) and configure the keyboard layout once and for all.
 ## SDK keyboard
 
 In this mode (`--keyboard=sdk`, or if the parameter is omitted), keyboard input
-events are injected at the Android API level. It works everywhere, but it is
-limited to ASCII and some other characters.
+events are injected at the Android API level. The Android virtual key map
+supports ASCII and a limited set of additional characters. This fork also
+handles [Russian text](#typing-in-russian) from the computer’s active layout.
 
 Note that on some devices, an additional option must be enabled in developer
 options for this keyboard mode to work. See
@@ -26,6 +27,23 @@ Additional parameters (specific to `--keyboard=sdk`) described below allow to
 customize the behavior.
 
 
+### Typing in Russian
+
+In SDK mode, switch EN/RU **on the computer** while the scrcpy window has
+focus. No layout change on Android and no `--prefer-text` flag is required.
+Single Latin letters still use key events by default. For a committed text
+fragment containing Cyrillic (including Ё/ё) or №, scrcpy uses a temporary
+Android clipboard entry and the paste key. This needs Android 7+ and an editor
+that accepts paste. `--prefer-text` also supports this; `--raw-key-events` does
+not send text at all.
+
+The temporary clip is marked sensitive and is not synchronized to the computer.
+After the paste, scrcpy restores the previous clip unless something else has
+copied a new one. Other apps with clipboard access may still observe it. For
+passwords, apps that reject paste, or devices without a usable clipboard, use
+[`scrcpy -K`](#uhid) and select Russian in Android’s physical keyboard settings.
+`--no-clipboard-autosync` or `--legacy-paste` disables the typing fallback.
+
 ### Text injection preference
 
 Two kinds of [events][textevents] are generated when typing text:
@@ -33,7 +51,7 @@ Two kinds of [events][textevents] are generated when typing text:
  - _text events_, signaling that a text has been entered.
 
 By default, numbers and "special characters" are inserted using text events, but
-letters are injected using key events, so that the keyboard behaves as expected
+ASCII letters are injected using key events, so that the keyboard behaves as expected
 in games (typically for WASD keys).
 
 But this may [cause issues][prefertext]. If you encounter such a problem, you

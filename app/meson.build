@@ -310,6 +310,11 @@ if get_option('buildtype') == 'debug'
             'tests/test_device_msg_deserialize.c',
             'src/device_msg.c',
         ]],
+        ['test_keyboard_sdk', [
+            'tests/test_keyboard_sdk.c',
+            'src/keyboard_sdk.c',
+            'src/util/intmap.c',
+        ]],
         ['test_orientation', [
             'tests/test_orientation.c',
             'src/options.c',

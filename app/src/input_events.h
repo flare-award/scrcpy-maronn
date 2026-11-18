@@ -370,6 +370,8 @@ enum sc_touch_action {
 struct sc_key_event {
     enum sc_action action;
     enum sc_keycode keycode;
+    // Unmodified key on the active layout, without SDL's Latin fallback
+    enum sc_keycode layout_keycode;
     enum sc_scancode scancode;
     uint16_t mods_state; // bitwise-OR of sc_mod values
     bool repeat;

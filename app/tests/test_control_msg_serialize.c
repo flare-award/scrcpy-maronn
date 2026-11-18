@@ -51,6 +51,17 @@ static void test_serialize_inject_text(void) {
     assert(!memcmp(buf, expected, sizeof(expected)));
 }
 
+static void test_serialize_paste_text(void) {
+    struct sc_control_msg msg = {
+        .type = SC_CONTROL_MSG_TYPE_PASTE_TEXT,
+        .inject_text = {.text = "ёЖ"},
+    };
+    uint8_t buf[SC_CONTROL_MSG_MAX_SIZE];
+    const uint8_t expected[] = {23, 0, 0, 0, 4, 0xd1, 0x91, 0xd0, 0x96};
+    assert(sc_control_msg_serialize(&msg, buf) == sizeof(expected));
+    assert(!memcmp(buf, expected, sizeof(expected)));
+}
+
 static void test_serialize_inject_text_long(void) {
     struct sc_control_msg msg;
     msg.type = SC_CONTROL_MSG_TYPE_INJECT_TEXT;
@@ -544,6 +555,7 @@ int main(int argc, char *argv[]) {
     test_serialize_inject_keycode();
     test_serialize_inject_text();
     test_serialize_inject_text_long();
+    test_serialize_paste_text();
     test_serialize_inject_touch_event();
     test_serialize_inject_scroll_event();
     test_serialize_back_or_screen_on();

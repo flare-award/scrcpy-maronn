@@ -717,6 +717,8 @@ sc_input_manager_process_key(struct sc_input_manager *im,
     struct sc_key_event evt = {
         .action = sc_action_from_sdl_keyboard_type(event->type),
         .keycode = keycode,
+        .layout_keycode = sc_keycode_from_sdl(
+            SDL_GetKeyFromScancode(event->scancode, SDL_KMOD_NONE, false)),
         .scancode = scancode,
         .repeat = event->repeat,
         .mods_state = sc_mods_state_from_sdl(mod),

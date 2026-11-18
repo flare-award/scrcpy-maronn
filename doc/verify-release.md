@@ -1,6 +1,20 @@
-# Verify release signatures
+# Verify downloads
 
-All releases are signed using Romain Vimont's [GPG key] ([raw]):
+For [scrcpy-maronn releases](https://github.com/flare-award/scrcpy-maronn/releases), download the binary and
+`SHA256SUMS.txt` from the same release. For example, to check the Windows x64
+archive in PowerShell, compare the output of the following command with its
+entry in `SHA256SUMS.txt`:
+
+```powershell
+Get-FileHash .\scrcpy-win64-v5.0.2.zip -Algorithm SHA256
+```
+
+The fork does **not** publish signatures from the upstream maintainer. The
+instructions below apply only to releases from **Genymobile/scrcpy**.
+
+## Upstream scrcpy release signatures
+
+Upstream releases are signed using Romain Vimont's [GPG key] ([raw]):
 
 [GPG key]: https://blog.rom1v.com/about/#gpg-key
 [raw]: https://blog.rom1v.com/keys/rom1v.asc

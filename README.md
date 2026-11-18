@@ -1,13 +1,36 @@
-> [!WARNING]
-> **This GitHub repo (<https://github.com/Genymobile/scrcpy>) is the only official
-source for the project. Do not download releases from random websites, even if
-their name contains `scrcpy`.**
-
-# scrcpy (v5.0.1)
+# scrcpy-maronn (v5.0.2)
 
 <img src="app/data/scrcpy.svg" width="128" height="128" alt="scrcpy" align="right" />
 
-_pronounced "**scr**een **c**o**py**"_
+**scrcpy-maronn** — форк [Genymobile/scrcpy](https://github.com/Genymobile/scrcpy).
+Владелец и репозиторий этой версии: [flare-award/scrcpy-maronn](https://github.com/flare-award/scrcpy-maronn).
+Все изменения выпуска v5.0.2 относительно оригинального scrcpy v5.0.1 внёс
+ИИ-агент Arena.ai по просьбе владельца. Авторы исходного scrcpy — Genymobile и
+Romain Vimont. Сборки форка не являются официальными релизами Genymobile.
+
+**[Скачать scrcpy-maronn v5.0.2](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.2)** ·
+[Windows 64-бит (ZIP)](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.2/scrcpy-win64-v5.0.2.zip).
+Распакуйте архив целиком и запустите `scrcpy.exe`.
+
+## Что нового в v5.0.2
+
+- **Русская раскладка компьютера.** Запустите `scrcpy` без параметров, откройте
+  поле ввода на телефоне и переключите EN → RU привычным сочетанием на ПК.
+  Наберите, например, `Привет, Ёж №1!`, переключитесь обратно и продолжайте
+  по-английски. Настраивать вторую раскладку на телефоне в режиме SDK не нужно.
+- **Чёрные поля вокруг телефона.** Нажмите F11 или запустите `scrcpy -f`:
+  свободное место слева и справа (или сверху и снизу) теперь чёрное, без
+  растяжения картинки. Для прежнего серого: `scrcpy -f --background-color=222222`.
+
+Для кириллицы режим SDK кратковременно использует буфер Android и команду
+вставки (Android 7+). Введённый фрагмент не отправляется в буфер ПК;
+предыдущее содержимое на телефоне восстанавливается, если его не заменило
+другое приложение. Приложения с доступом к истории буфера могут увидеть текст.
+Для паролей, игр и полей без вставки используйте уже существующий режим
+`scrcpy -K`: нажмите Alt+K и выберите русскую раскладку **на Android**.
+[Подробнее о режимах клавиатуры](doc/keyboard.md#typing-in-russian).
+
+## About scrcpy
 
 This application mirrors Android devices (video and audio) connected via USB or
 [TCP/IP](doc/connection.md#tcpip-wireless) and allows control using the
@@ -177,7 +200,7 @@ documented in the following pages:
  - [Translations][wiki] (not necessarily up to date)
  - [Build instructions](doc/build.md)
  - [Developers](doc/develop.md)
- - [Verify release signatures](doc/verify-release.md)
+ - [Verify downloads](doc/verify-release.md)
 
 [wiki]: https://github.com/Genymobile/scrcpy/wiki
 
@@ -194,7 +217,8 @@ documented in the following pages:
 
 ## Contact
 
-You can open an [issue] for bug reports, feature requests or general questions.
+The following [issue tracker][issue] and community links belong to **upstream scrcpy**.
+For a problem specific to this fork, contact [flare-award](https://github.com/flare-award).
 
 For bug reports, please read the [FAQ](FAQ.md) first, you might find a solution
 to your problem immediately.
@@ -210,9 +234,9 @@ You can also use:
 
 ## Donate
 
-I'm [@rom1v](https://github.com/rom1v), the author and maintainer of _scrcpy_.
+[@rom1v](https://github.com/rom1v) is the author and maintainer of upstream _scrcpy_.
 
-If you appreciate this application, you can [support my open source
+If you appreciate this application, you can [support his open source
 work][donate]:
  - [GitHub Sponsors](https://github.com/sponsors/rom1v)
  - [Liberapay](https://liberapay.com/rom1v/)
