@@ -2,6 +2,9 @@
 name: Publish built packages
 
 on:
+  workflow_run:
+    workflows: [Build]
+    types: [completed]
   workflow_dispatch:
     inputs:
       run_id:
@@ -14,16 +17,25 @@ on:
         required: true
         default: '1'
 
+env:
+  GH_TOKEN: ${{ github.token }}
+  RUN_ID: ${{ inputs.run_id || github.event.workflow_run.id }}
+  ATTEMPT: ${{ inputs.attempt || github.event.workflow_run.run_attempt }}
+
 jobs:
-  publish:
+  validate:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.run_attempt > 1 &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch'))
     runs-on: ubuntu-latest
     permissions:
       actions: read
-      contents: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-      RUN_ID: ${{ inputs.run_id }}
-      ATTEMPT: ${{ inputs.attempt }}
+      contents: read
+    outputs:
+      sha: ${{ steps.source.outputs.sha }}
+      arm: ${{ steps.source.outputs.arm }}
     steps:
       - name: Validate build provenance and required jobs
         id: source
@@ -37,6 +49,15 @@ jobs:
             .workflow_id == $wf and .head_repository.full_name == $repo
             and .status == "completed" and (.event == "push" or .event == "workflow_dispatch")' <<< "$run"
           sha=$(jq -r .head_sha <<< "$run")
+          if [[ "$GITHUB_EVENT_NAME" == workflow_run ]]; then
+            # Automatic completion is restricted to a partial release explicitly
+            # published from this very run. Never create a release on workflow_run.
+            releases=$(gh api --paginate --slurp "$repo/releases?per_page=100")
+            if ! jq -e --arg marker "<!-- partial-build:$RUN_ID -->" --arg sha "$sha" \
+                'any(.[][]; .target_commitish == $sha and (.body // "" | contains($marker)))' <<< "$releases"; then
+              exit 0
+            fi
+          fi
           # Only ship an already reviewed/merged source revision.
           default=$(gh api "$repo" --jq .default_branch)
           gh api "$repo/compare/$sha...$default" | jq -e '.status == "identical" or .status == "ahead"'
@@ -48,37 +69,49 @@ jobs:
           if jq -e 'any(.[]; .name == "package-macos-aarch64" and .conclusion == "success")' <<< "$jobs"; then
             echo 'arm=true' >> "$GITHUB_OUTPUT"
           else
+            if [[ "$GITHUB_EVENT_NAME" == workflow_run ]]; then
+              exit 0 # still no native archive to add
+            fi
             # A compiler/test error is NOT an infrastructure shortage.
             jq -e '[.[] | select(.name == "build-macos-aarch64")] | max_by(.id) |
               .conclusion == "cancelled" and (.runner_name // "") == ""' <<< "$jobs"
             echo 'arm=false' >> "$GITHUB_OUTPUT"
           fi
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: validate
+    if: needs.validate.outputs.sha != ''
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ steps.source.outputs.sha }}
+          ref: ${{ needs.validate.outputs.sha }}
       - uses: actions/download-artifact@v8
         with:
-          run-id: ${{ inputs.run_id }}
+          run-id: ${{ env.RUN_ID }}
           github-token: ${{ github.token }}
           pattern: release-*
           merge-multiple: true
           path: release/output
       - uses: actions/download-artifact@v8
         with:
-          run-id: ${{ inputs.run_id }}
+          run-id: ${{ env.RUN_ID }}
           github-token: ${{ github.token }}
           name: scrcpy-server
           path: release/work/build-server/server/
       - name: Verify archives and publish at the exact build commit
         env:
-          BUILD_SHA: ${{ steps.source.outputs.sha }}
-          HAVE_ARM: ${{ steps.source.outputs.arm }}
+          BUILD_SHA: ${{ needs.validate.outputs.sha }}
+          HAVE_ARM: ${{ needs.validate.outputs.arm }}
         run: |
           set -euo pipefail
           export VERSION="v$(sed -n "s/^[[:space:]]*version: '\([^']*\)',/\1/p" meson.build)"
           [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
-          release/package_server.sh
+          cp release/work/build-server/server/scrcpy-server "release/output/scrcpy-server-$VERSION"
           cp "release/notes/$VERSION.md" "$RUNNER_TEMP/notes.md"
           cd release/output
           server="scrcpy-server-$VERSION"
@@ -125,6 +158,7 @@ jobs:
             gh release upload "$VERSION" SHA256SUMS.txt --clobber
             gh release edit "$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
           else
+            test "$GITHUB_EVENT_NAME" = workflow_dispatch
             gh release create "$VERSION" "${assets[@]}" SHA256SUMS.txt --target "$BUILD_SHA" \
               --title "scrcpy-maronn $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
           fi
