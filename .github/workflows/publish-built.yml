@@ -1,0 +1,130 @@
+# Recovery for an unavailable hosted Apple Silicon runner. Never bypass tests.
+name: Publish built packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Build workflow run in this repository'
+        type: string
+        required: true
+      attempt:
+        description: 'Completed run attempt whose results should be published'
+        type: string
+        required: true
+        default: '1'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ inputs.run_id }}
+      ATTEMPT: ${{ inputs.attempt }}
+    steps:
+      - name: Validate build provenance and required jobs
+        id: source
+        run: |
+          set -euo pipefail
+          [[ "$RUN_ID" =~ ^[0-9]+$ && "$ATTEMPT" =~ ^[1-9][0-9]*$ ]]
+          repo="repos/$GITHUB_REPOSITORY"
+          run=$(gh api "$repo/actions/runs/$RUN_ID/attempts/$ATTEMPT")
+          workflow=$(gh api "$repo/actions/workflows/release.yml" --jq .id)
+          jq -e --argjson wf "$workflow" --arg repo "$GITHUB_REPOSITORY" '
+            .workflow_id == $wf and .head_repository.full_name == $repo
+            and .status == "completed" and (.event == "push" or .event == "workflow_dispatch")' <<< "$run"
+          sha=$(jq -r .head_sha <<< "$run")
+          # Only ship an already reviewed/merged source revision.
+          default=$(gh api "$repo" --jq .default_branch)
+          gh api "$repo/compare/$sha...$default" | jq -e '.status == "identical" or .status == "ahead"'
+          jobs=$(gh api --paginate --slurp "$repo/actions/runs/$RUN_ID/jobs?filter=all&per_page=100" | jq --argjson n "$ATTEMPT" '[.[].jobs[] | select(.run_attempt <= $n)] | group_by(.name) | map(max_by(.id))')
+          for job in test-client test-scrcpy-server test-build-scrcpy-server-without-gradle build-scrcpy-server \
+                     package-win32 package-win64 package-winarm64 package-linux-x86_64 package-macos-x86_64; do
+            jq -e --arg job "$job" 'any(.[]; .name == $job and .conclusion == "success")' <<< "$jobs"
+          done
+          if jq -e 'any(.[]; .name == "package-macos-aarch64" and .conclusion == "success")' <<< "$jobs"; then
+            echo 'arm=true' >> "$GITHUB_OUTPUT"
+          else
+            # A compiler/test error is NOT an infrastructure shortage.
+            jq -e '[.[] | select(.name == "build-macos-aarch64")] | max_by(.id) |
+              .conclusion == "cancelled" and (.runner_name // "") == ""' <<< "$jobs"
+            echo 'arm=false' >> "$GITHUB_OUTPUT"
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.source.outputs.sha }}
+      - uses: actions/download-artifact@v8
+        with:
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          pattern: release-*
+          merge-multiple: true
+          path: release/output
+      - uses: actions/download-artifact@v8
+        with:
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          name: scrcpy-server
+          path: release/work/build-server/server/
+      - name: Verify archives and publish at the exact build commit
+        env:
+          BUILD_SHA: ${{ steps.source.outputs.sha }}
+          HAVE_ARM: ${{ steps.source.outputs.arm }}
+        run: |
+          set -euo pipefail
+          export VERSION="v$(sed -n "s/^[[:space:]]*version: '\([^']*\)',/\1/p" meson.build)"
+          [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          release/package_server.sh
+          cp "release/notes/$VERSION.md" "$RUNNER_TEMP/notes.md"
+          cd release/output
+          server="scrcpy-server-$VERSION"
+          assets=("$server")
+          for target in win32 win64 winarm64; do
+            file="scrcpy-$target-$VERSION.zip"
+            unzip -tq "$file"
+            unzip -p "$file" "${file%.zip}/scrcpy-server" | cmp - "$server"
+            assets+=("$file")
+          done
+          targets=(linux-x86_64 macos-x86_64)
+          if [[ "$HAVE_ARM" == true ]]; then
+            targets+=(macos-aarch64)
+          else
+            printf '\n**macOS Apple Silicon:** нативный архив отсутствует: GitHub не выделил ARM-раннер. Доступны исходники и сборка для Mac с Intel.\n' >> "$RUNNER_TEMP/notes.md"
+            echo "<!-- partial-build:$RUN_ID -->" >> "$RUNNER_TEMP/notes.md"
+          fi
+          for target in "${targets[@]}"; do
+            file="scrcpy-$target-$VERSION.tar.gz"
+            tar xOzf "$file" "${file%.tar.gz}/scrcpy-server" | cmp - "$server"
+            assets+=("$file")
+          done
+          sha256sum "${assets[@]}" > SHA256SUMS.txt
+          sha256sum --check --strict SHA256SUMS.txt
+          # Never change a published binary or move a tag. A later successful
+          # ARM retry may add its archive to the same release.
+          tag=$(git ls-remote origin "refs/tags/$VERSION" | cut -f1)
+          if [[ -n "$tag" ]]; then
+            test "$tag" = "$BUILD_SHA"
+            test "$HAVE_ARM" = true
+            published=$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$VERSION")
+            jq -e --arg marker "<!-- partial-build:$RUN_ID -->" '.body | contains($marker)' <<< "$published"
+            missing=()
+            for asset in "${assets[@]}"; do
+              digest=$(jq -r --arg name "$asset" '.assets[] | select(.name == $name) | .digest' <<< "$published")
+              if [[ -n "$digest" ]]; then
+                test "$digest" = "sha256:$(sha256sum "$asset" | cut -d' ' -f1)"
+              else
+                test "$asset" = "scrcpy-macos-aarch64-$VERSION.tar.gz"
+                missing+=("$asset")
+              fi
+            done
+            if ((${#missing[@]})); then gh release upload "$VERSION" "${missing[@]}"; fi
+            gh release upload "$VERSION" SHA256SUMS.txt --clobber
+            gh release edit "$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+          else
+            gh release create "$VERSION" "${assets[@]}" SHA256SUMS.txt --target "$BUILD_SHA" \
+              --title "scrcpy-maronn $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+          fi
