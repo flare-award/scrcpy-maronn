@@ -63,6 +63,8 @@ public class ControlMessageReader {
                 return parseCameraSetTorch();
             case ControlMessage.TYPE_RESIZE_DISPLAY:
                 return parseResizeDisplay();
+            case ControlMessage.TYPE_SET_MAX_FPS:
+                return ControlMessage.createSetMaxFps(dis.readUnsignedShort());
             case ControlMessage.TYPE_SCAN_FILE:
                 return parseScanFile();
             default:

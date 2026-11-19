@@ -292,6 +292,17 @@ open_hard_keyboard_settings(struct sc_input_manager *im) {
 }
 
 static void
+set_capture_fps(struct sc_input_manager *im, uint16_t fps) {
+    struct sc_control_msg msg = {
+        .type = SC_CONTROL_MSG_TYPE_SET_MAX_FPS,
+        .set_max_fps.fps = fps,
+    };
+    if (!sc_controller_push_msg(im->controller, &msg)) {
+        LOGW("Could not request FPS limit");
+    }
+}
+
+static void
 reset_video(struct sc_input_manager *im) {
     assert(im->controller);
 
@@ -554,6 +565,15 @@ sc_input_manager_process_key(struct sc_input_manager *im,
 
         if (control && !im->camera) {
             switch (sdl_keycode) {
+                case SDLK_0:
+                case SDLK_1:
+                case SDLK_2:
+                case SDLK_3:
+                case SDLK_4:
+                    if (video && down && !repeat && !shift && !paused) {
+                        set_capture_fps(im, (sdl_keycode - SDLK_0) * 30);
+                    }
+                    return;
                 case SDLK_H:
                     if (im->kp && !shift && !repeat && !paused) {
                         action_home(im, action);

@@ -51,6 +51,7 @@ public class ScreenCapture extends SurfaceCapture {
     private OpenGLRunner glRunner;
 
     public ScreenCapture(VirtualDisplayListener vdListener, Options options) {
+        super(options.getMaxFps());
         this.vdListener = vdListener;
         this.displayId = options.getDisplayId();
         assert displayId != Device.DISPLAY_ID_NONE;
@@ -106,7 +107,7 @@ public class ScreenCapture extends SurfaceCapture {
     }
 
     @Override
-    public void start(Surface surface) throws IOException {
+    public void start(Surface surface, float maxFps) throws IOException {
         if (display != null) {
             SurfaceControl.destroyDisplay(display);
             display = null;
@@ -131,7 +132,7 @@ public class ScreenCapture extends SurfaceCapture {
 
         try {
             virtualDisplay = ServiceManager.getDisplayManager()
-                    .createVirtualDisplay("scrcpy", inputSize.getWidth(), inputSize.getHeight(), displayId, surface);
+                    .createVirtualDisplay("scrcpy", inputSize.getWidth(), inputSize.getHeight(), displayId, surface, maxFps);
             Ln.d("Display: using DisplayManager API");
         } catch (Exception displayManagerException) {
             if (Build.BRAND.equalsIgnoreCase("oculus") && Build.MODEL.toLowerCase(Locale.ROOT).startsWith("quest")) {

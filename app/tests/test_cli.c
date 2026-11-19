@@ -124,6 +124,27 @@ static void test_options2(void) {
     assert(opts->record_format == SC_RECORD_FORMAT_MP4);
 }
 
+static uint16_t parsed_max_size(int argc, char *argv[]) {
+    struct scrcpy_cli_args args = { .opts = scrcpy_options_default };
+    bool ok = scrcpy_parse_args(&args, argc, argv);
+    assert(ok);
+    return args.opts.max_size;
+}
+
+static void test_playback_size(void) {
+    assert(parsed_max_size(1, (char *[]) {"scrcpy", NULL}) == 1600);
+    assert(parsed_max_size(2, (char *[]) {"scrcpy", "-m0", NULL}) == 0);
+    assert(parsed_max_size(2, (char *[]) {"scrcpy", "-m1280", NULL}) == 1280);
+    assert(parsed_max_size(2, (char *[]) {"scrcpy", "--max-fps=90", NULL}) == 1600);
+    assert(parsed_max_size(2, (char *[]) {"scrcpy", "--record=test.mkv", NULL}) == 0);
+    assert(parsed_max_size(2, (char *[]) {"scrcpy", "--no-video", NULL}) == 0);
+    assert(parsed_max_size(2, (char *[]) {"scrcpy", "--video-source=camera", NULL}) == 0);
+    assert(parsed_max_size(2, (char *[]) {"scrcpy", "--new-display", NULL}) == 0);
+#ifdef HAVE_V4L2
+    assert(parsed_max_size(2, (char *[]) {"scrcpy", "--v4l2-sink=/dev/video0", NULL}) == 0);
+#endif
+}
+
 static void test_parse_shortcut_mods(void) {
     uint8_t mods;
     bool ok;
@@ -160,6 +181,7 @@ int main(int argc, char *argv[]) {
     test_flag_help();
     test_options();
     test_options2();
+    test_playback_size();
     test_parse_shortcut_mods();
     return 0;
 }

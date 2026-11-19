@@ -394,6 +394,13 @@ public class Controller implements AsyncProcessor, VirtualDisplayListener {
                         setDisplayPower(msg.getOn());
                     }
                     return true;
+                case ControlMessage.TYPE_SET_MAX_FPS:
+                    if (surfaceCapture != null) {
+                        int fps = msg.getMaxFps();
+                        surfaceCapture.getCaptureControl().setMaxFps(fps);
+                        Ln.i("Capture FPS limit: " + (fps == 0 ? "unlimited" : fps));
+                    }
+                    return true;
                 case ControlMessage.TYPE_ROTATE_DEVICE:
                     int actionDisplayId = getActionDisplayId();
                     if (actionDisplayId != Device.DISPLAY_ID_NONE) {

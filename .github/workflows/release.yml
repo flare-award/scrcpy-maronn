@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Archive label, e.g. v5.0.3 (default is ref name)'
+        description: 'Archive label, e.g. v5.1.0 (default is ref name)'
       operation:
         description: 'Check only, build artifacts, or publish a checked release'
         type: choice
@@ -43,6 +43,14 @@ jobs:
             exit 1
           fi
 
+      # Pin the prospective server in install_release.sh BEFORE tagging. The
+      # release build must reproduce the same bytes, or packaging stops.
+      - name: Report server checksum for release preparation
+        if: inputs.operation == 'check'
+        run: |
+          release/build_server.sh
+          echo "::notice title=Prebuilt server SHA-256::$(sha256sum release/work/build-server/server/scrcpy-server)"
+
   build-scrcpy-server:
     if: github.event_name != 'pull_request' && inputs.operation != 'check'
     runs-on: ubuntu-latest
@@ -57,7 +65,10 @@ jobs:
           java-version: '17'
 
       - name: Build
-        run: release/build_server.sh
+        run: |
+          release/build_server.sh
+          checksum=$(sed -n 's/^PREBUILT_SERVER_SHA256=//p' install_release.sh)
+          printf '%s  %s\n' "$checksum" release/work/build-server/server/scrcpy-server | sha256sum --check --strict
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -89,7 +100,16 @@ jobs:
           api-level: 30
           arch: x86_64
           disable-spellchecker: true
-          script: python3 release/test_typing.py build_manual/scrcpy-server $(sed -n 's/^SCRCPY_VERSION_NAME=//p' server/build_without_gradle.sh)
+          script: |
+            python3 release/test_typing.py build_manual/scrcpy-server $(sed -n 's/^SCRCPY_VERSION_NAME=//p' server/build_without_gradle.sh)
+            python3 release/test_mirror_fps.py build_manual/scrcpy-server $(sed -n 's/^SCRCPY_VERSION_NAME=//p' server/build_without_gradle.sh)
+
+      - name: Verify requested mirror refresh rates and live switching on Android 14
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
+        with:
+          api-level: 34
+          arch: x86_64
+          script: python3 release/test_mirror_fps.py build_manual/scrcpy-server $(sed -n 's/^SCRCPY_VERSION_NAME=//p' server/build_without_gradle.sh)
 
   test-client:
     runs-on: ubuntu-latest

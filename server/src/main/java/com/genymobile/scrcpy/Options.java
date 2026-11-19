@@ -407,6 +407,9 @@ public class Options {
                     break;
                 case "max_fps":
                     options.maxFps = parseFloat("max_fps", value);
+                    if (options.maxFps < 0 || Float.isNaN(options.maxFps) || Float.isInfinite(options.maxFps)) {
+                        throw new IllegalArgumentException("max_fps must be finite and non-negative: " + value);
+                    }
                     break;
                 case "angle":
                     options.angle = parseFloat("angle", value);

@@ -12,17 +12,15 @@ import java.io.IOException;
  */
 public abstract class SurfaceCapture {
 
-    private CaptureControl captureControl;
+    // Construct before either the controller or encoder thread starts. A request
+    // arriving before the first frame must not be lost (or see a null control).
+    private final CaptureControl captureControl;
 
-    /**
-     * Called once before the first capture starts.
-     */
-    public final void init(CaptureControl captureControl, VideoConstraints videoConstraints) throws ConfigurationException, IOException {
-        this.captureControl = captureControl;
-        init(videoConstraints);
+    protected SurfaceCapture(float maxFps) {
+        captureControl = new CaptureControl(maxFps);
     }
 
-    public CaptureControl getCaptureControl() {
+    public final CaptureControl getCaptureControl() {
         return captureControl;
     }
 
@@ -49,8 +47,9 @@ public abstract class SurfaceCapture {
      * Start the capture to the target surface.
      *
      * @param surface the surface which will be encoded
+     * @param maxFps the FPS limit for this session, or zero for no limit
      */
-    public abstract void start(Surface surface) throws IOException;
+    public abstract void start(Surface surface, float maxFps) throws IOException;
 
     /**
      * Stop the capture.

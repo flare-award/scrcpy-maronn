@@ -60,6 +60,16 @@ public class ControlMessageReaderTest {
     }
 
     @Test
+    public void testSetMaxFps() throws IOException {
+        byte[] packet = {24, 0, 90, 24, 0, 0};
+        ControlMessageReader reader = new ControlMessageReader(new ByteArrayInputStream(packet));
+        ControlMessage first = reader.read();
+        Assert.assertEquals(ControlMessage.TYPE_SET_MAX_FPS, first.getType());
+        Assert.assertEquals(90, first.getMaxFps());
+        Assert.assertEquals(0, reader.read().getMaxFps());
+    }
+
+    @Test
     public void testParsePasteTypedText() throws IOException {
         byte[] packet = {23, 0, 0, 0, 4, (byte) 0xd1, (byte) 0x91, (byte) 0xd0, (byte) 0x96};
         ControlMessage event = new ControlMessageReader(new ByteArrayInputStream(packet)).read();

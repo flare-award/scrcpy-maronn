@@ -531,7 +531,8 @@ static const struct sc_option options[] = {
                 "displays).\n"
                 "For camera mirroring, the value is used to select the camera "
                 "source size instead.\n"
-                "Default is 0 (unlimited).",
+                "Default is 1600 for ordinary screen playback, 0 otherwise. "
+                "Use -m0 for native resolution.",
     },
     {
         .shortopt = 'M',
@@ -542,7 +543,9 @@ static const struct sc_option options[] = {
         .longopt = "max-fps",
         .argdesc = "value",
         .text = "Limit the frame rate of screen capture (officially supported "
-                "since Android 10, but may work on earlier versions).",
+                "since Android 10, but may work on earlier versions). 0 means "
+                "unlimited. For a mirrored display on Android 14+, a positive "
+                "value also requests that virtual display refresh rate.",
     },
     {
         .longopt_id = OPT_MIN_SIZE_ALIGNMENT,
@@ -1200,6 +1203,11 @@ static const struct sc_shortcut shortcuts[] = {
     {
         .shortcuts = { "MOD+k" },
         .text = "Open keyboard settings on the device (for HID keyboard only)",
+    },
+    {
+        .shortcuts = { "MOD+1/2/3/4", "MOD+0" },
+        .text = "Set screen capture limit to 30/60/90/120 fps, or unlimited "
+                "(0), without reconnecting",
     },
     {
         .shortcuts = { "MOD+i" },
@@ -2553,6 +2561,7 @@ parse_args_with_getopt(struct scrcpy_cli_args *args, int argc, char *argv[],
                        const char *optstring, const struct option *longopts) {
     struct scrcpy_options *opts = &args->opts;
 
+    bool max_size_set = false;
     optind = 0; // reset to start from the first argument in tests
 
     int c;
@@ -2608,6 +2617,7 @@ parse_args_with_getopt(struct scrcpy_cli_args *args, int argc, char *argv[],
                 if (!parse_max_size(optarg, &opts->max_size)) {
                     return false;
                 }
+                max_size_set = true;
                 break;
             case 'M':
                 opts->mouse_input_mode = SC_MOUSE_INPUT_MODE_UHID_OR_AOA;
@@ -3084,6 +3094,14 @@ parse_args_with_getopt(struct scrcpy_cli_args *args, int argc, char *argv[],
     if (!opts->video && !otg) {
         // If video is disabled, then scrcpy must exit on audio failure.
         opts->require_audio = true;
+    }
+
+    // Bound the phone's encoder workload for ordinary screen playback. Never
+    // silently change recording, camera, new-display or V4L2 dimensions.
+    if (!max_size_set && opts->video_playback && !opts->record_filename
+            && opts->video_source == SC_VIDEO_SOURCE_DISPLAY
+            && !opts->new_display && !v4l2 && !otg) {
+        opts->max_size = 1600;
     }
 
     if (opts->audio_playback && opts->audio_buffer == -1) {

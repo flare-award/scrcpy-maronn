@@ -31,6 +31,7 @@ public final class ControlMessage {
     public static final int TYPE_RESIZE_DISPLAY = 21;
     public static final int TYPE_SCAN_FILE = 22;
     public static final int TYPE_PASTE_TEXT = 23;
+    public static final int TYPE_SET_MAX_FPS = 24;
 
     public static final long SEQUENCE_INVALID = 0;
 
@@ -61,6 +62,7 @@ public final class ControlMessage {
     private int productId;
     private int width;
     private int height;
+    private int maxFps;
 
     private ControlMessage() {
     }
@@ -188,6 +190,17 @@ public final class ControlMessage {
         msg.width = width;
         msg.height = height;
         return msg;
+    }
+
+    public static ControlMessage createSetMaxFps(int fps) {
+        ControlMessage msg = new ControlMessage();
+        msg.type = TYPE_SET_MAX_FPS;
+        msg.maxFps = fps;
+        return msg;
+    }
+
+    public int getMaxFps() {
+        return maxFps;
     }
 
     public static ControlMessage createScanFile(String path) {
