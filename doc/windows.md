@@ -6,14 +6,14 @@
 
 Download and extract the archive for your computer:
 
- - [scrcpy-win64-v5.0.3.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-win64-v5.0.3.zip) (64-bit)<br>
-   <sub>SHA-256: `8ed9c567c4c8f2fbaf1a8a6f517f160cacd78f50f9c8875fa8ef6d2e75840784`</sub>
- - [scrcpy-win32-v5.0.3.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-win32-v5.0.3.zip) (32-bit)<br>
-   <sub>SHA-256: `3479e62f33c59ecb523ae9f31407a88b55bca0f86945214c990292ad44d1f939`</sub>
- - [scrcpy-winarm64-v5.0.3.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-winarm64-v5.0.3.zip) (ARM 64-bit)<br>
-   <sub>SHA-256: `d7ae01de6c7fc1a1ec6c0f9fef9efe702b7a01a3c5a43492fd3e3d66856cd9c2`</sub>
+ - [scrcpy-win64-v5.1.0.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-win64-v5.1.0.zip) (64-bit)<br>
+   <sub>SHA-256: `999278614b486d3b17b7324cde3b7d676d92dd8d2d3553e825306fecd996b7f6`</sub>
+ - [scrcpy-win32-v5.1.0.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-win32-v5.1.0.zip) (32-bit)<br>
+   <sub>SHA-256: `c8799078bbc2764d0479b377b303c601ba008c12e15964633ac5866388d8ff70`</sub>
+ - [scrcpy-winarm64-v5.1.0.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-winarm64-v5.1.0.zip) (ARM 64-bit)<br>
+   <sub>SHA-256: `35d28407e1c38b872d23a315e0999610dd0041d12172384f46e644d3de947b7e`</sub>
 
-[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.3) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/SHA256SUMS.txt).
+[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.1.0) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/SHA256SUMS.txt).
 
 
 ### From a package manager (upstream scrcpy, not this fork)
@@ -48,6 +48,11 @@ _See [build.md](build.md) to build and install the app manually._
 ## Run
 
 _Make sure that your device meets the [prerequisites](/README.md#prerequisites)._
+
+For a quick performance preset, open `scrcpy-fps.bat` in the extracted folder.
+Choose **3** for 90 fps at up to 1280 pixels (long edge), or **1** for less
+phone load. The console shows delivered frames per second. Use left Alt+1/2/3/4
+to switch the cap without reconnecting; Alt+0 removes it. See [video](video.md#frame-rate).
 
 Scrcpy is a command line application: it is mainly intended to be executed from
 a terminal with command line arguments.

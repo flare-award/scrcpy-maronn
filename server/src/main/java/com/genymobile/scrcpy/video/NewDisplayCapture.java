@@ -75,6 +75,7 @@ public class NewDisplayCapture extends SurfaceCapture {
     private int dpi;
 
     public NewDisplayCapture(VirtualDisplayListener vdListener, Options options) {
+        super(options.getMaxFps());
         this.vdListener = vdListener;
         this.newDisplay = options.getNewDisplay();
         assert newDisplay != null;
@@ -264,7 +265,7 @@ public class NewDisplayCapture extends SurfaceCapture {
     }
 
     @Override
-    public void start(Surface surface) throws IOException {
+    public void start(Surface surface, float maxFps) throws IOException {
         if (displayTransform != null) {
             assert glRunner == null;
             OpenGLFilter glFilter = new AffineOpenGLFilter(displayTransform);

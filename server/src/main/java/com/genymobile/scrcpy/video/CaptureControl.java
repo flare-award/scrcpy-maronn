@@ -10,9 +10,25 @@ public class CaptureControl {
     public static final int RESET_REASON_CLIENT_RESIZED = 1 << 3;
 
     private int reset = 0;
+    private float maxFps;
 
     // Current instance of MediaCodec to "interrupt" on reset
     private MediaCodec runningMediaCodec;
+
+    public CaptureControl(float maxFps) {
+        this.maxFps = maxFps;
+    }
+
+    public synchronized float getMaxFps() {
+        return maxFps;
+    }
+
+    public synchronized void setMaxFps(int fps) {
+        if (maxFps != fps) {
+            maxFps = fps;
+            reset(RESET_REASON_CLIENT_RESET);
+        }
+    }
 
     public synchronized boolean isResetRequested() {
         return reset != 0;

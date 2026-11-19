@@ -11,6 +11,8 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.display.VirtualDisplay;
+import android.hardware.display.VirtualDisplayConfig;
+import android.os.Build;
 import android.os.Handler;
 import android.view.Display;
 import android.view.Surface;
@@ -168,17 +170,54 @@ public final class DisplayManager {
         return createVirtualDisplayMethod;
     }
 
-    public VirtualDisplay createVirtualDisplay(String name, int width, int height, int displayIdToMirror, Surface surface) throws Exception {
+    public VirtualDisplay createVirtualDisplay(String name, int width, int height, int displayIdToMirror, Surface surface, float maxFps)
+            throws Exception {
+        if (Build.VERSION.SDK_INT >= AndroidVersions.API_34_ANDROID_14 && maxFps > 0) {
+            try {
+                VirtualDisplay vd = createMirrorWithRefreshRate(name, width, height, displayIdToMirror, surface, maxFps);
+                if (vd != null) {
+                    Ln.d("Requested mirror refresh rate: " + maxFps + " Hz");
+                    return vd;
+                }
+            } catch (Exception e) {
+                Ln.d("Mirror refresh rate request not supported: " + e);
+            }
+            // Vendor implementations may reject the configuration. Keep the FPS
+            // limit at the encoder, but do not fail mirroring for a refresh hint.
+            Ln.w("Using the default mirror refresh rate");
+        }
         Method method = getCreateVirtualDisplayMethod();
-        return (VirtualDisplay) method.invoke(null, name, width, height, displayIdToMirror, surface);
+        VirtualDisplay vd = (VirtualDisplay) method.invoke(null, name, width, height, displayIdToMirror, surface);
+        if (vd == null) {
+            throw new IllegalStateException("Could not create mirror display");
+        }
+        return vd;
     }
 
-    public VirtualDisplay createNewVirtualDisplay(String name, int width, int height, int dpi, Surface surface, int flags) throws Exception {
+    @TargetApi(AndroidVersions.API_34_ANDROID_14)
+    private static VirtualDisplay createMirrorWithRefreshRate(String name, int width, int height, int displayId, Surface surface, float fps)
+            throws ReflectiveOperationException {
+        // Equivalent to the AOSP static createVirtualDisplay() mirror, but with
+        // an explicit refresh request. Do not change the physical display mode.
+        VirtualDisplayConfig.Builder builder = new VirtualDisplayConfig.Builder(name, width, height, 1)
+                .setFlags(android.hardware.display.DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR)
+                .setSurface(surface)
+                .setRequestedRefreshRate(fps);
+        if (displayId != Display.DEFAULT_DISPLAY) {
+            builder.getClass().getMethod("setDisplayIdToMirror", int.class).invoke(builder, displayId);
+        }
+        return getShellDisplayManager().createVirtualDisplay(builder.build());
+    }
+
+    private static android.hardware.display.DisplayManager getShellDisplayManager() throws ReflectiveOperationException {
         Constructor<android.hardware.display.DisplayManager> ctor = android.hardware.display.DisplayManager.class.getDeclaredConstructor(
                 Context.class);
         ctor.setAccessible(true);
-        android.hardware.display.DisplayManager dm = ctor.newInstance(FakeContext.get());
-        return dm.createVirtualDisplay(name, width, height, dpi, surface, flags);
+        return ctor.newInstance(FakeContext.get());
+    }
+
+    public VirtualDisplay createNewVirtualDisplay(String name, int width, int height, int dpi, Surface surface, int flags) throws Exception {
+        return getShellDisplayManager().createVirtualDisplay(name, width, height, dpi, surface, flags);
     }
 
     private Method getRequestDisplayPowerMethod() throws NoSuchMethodException {

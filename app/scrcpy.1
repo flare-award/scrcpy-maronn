@@ -316,7 +316,7 @@ For display mirroring, the other dimension is computed so that the device aspect
 
 For camera mirroring, the value is used to select the camera source size instead.
 
-Default is 0 (unlimited).
+Default is 1600 for ordinary screen playback, 0 otherwise. Use \-m0 for native resolution.
 
 .TP
 .B \-M
@@ -324,7 +324,7 @@ Same as \fB\-\-mouse=uhid\fR, or \fB\-\-mouse=aoa\fR if \fB\-\-otg\fR is set.
 
 .TP
 .BI "\-\-max\-fps " value
-Limit the framerate of screen capture (officially supported since Android 10, but may work on earlier versions).
+Limit the frame rate of screen capture (officially supported since Android 10, but may work on earlier versions). 0 means unlimited. For a mirrored display on Android 14+, a positive value also requests that virtual display refresh rate.
 
 .TP
 .BI "\-\-min\-size\-alignment " alignment
@@ -866,6 +866,10 @@ Inject computer clipboard text as a sequence of key events
 .TP
 .B MOD+k
 Open keyboard settings on the device (for HID keyboard only)
+
+.TP
+.B MOD+1 / MOD+2 / MOD+3 / MOD+4 / MOD+0
+Set screen capture limit to 30 / 60 / 90 / 120 fps, or unlimited (0), without reconnecting
 
 .TP
 .B MOD+i

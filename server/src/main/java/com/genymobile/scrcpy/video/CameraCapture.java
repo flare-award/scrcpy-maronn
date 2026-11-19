@@ -91,6 +91,7 @@ public class CameraCapture extends SurfaceCapture {
     private CameraCaptureSession currentSession;
 
     public CameraCapture(Options options) {
+        super(options.getMaxFps());
         this.explicitCameraId = options.getCameraId();
         this.cameraFacing = options.getCameraFacing();
         this.explicitSize = options.getCameraSize();
@@ -274,7 +275,7 @@ public class CameraCapture extends SurfaceCapture {
 
     @TargetApi(AndroidVersions.API_30_ANDROID_11)
     @Override
-    public void start(Surface surface) throws IOException {
+    public void start(Surface surface, float maxFps) throws IOException {
         if (transform != null) {
             assert glRunner == null;
             OpenGLFilter glFilter = new AffineOpenGLFilter(transform);

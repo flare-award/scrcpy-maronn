@@ -51,6 +51,7 @@ enum sc_control_msg_type {
     SC_CONTROL_MSG_TYPE_RESIZE_DISPLAY,
     SC_CONTROL_MSG_TYPE_SCAN_FILE,
     SC_CONTROL_MSG_TYPE_PASTE_TEXT, // same payload as INJECT_TEXT
+    SC_CONTROL_MSG_TYPE_SET_MAX_FPS,
 };
 
 enum sc_copy_key {
@@ -126,6 +127,9 @@ struct sc_control_msg {
             uint16_t width;
             uint16_t height;
         } resize_display;
+        struct {
+            uint16_t fps; // 0 means unlimited
+        } set_max_fps;
         struct {
             char *path; // owned, to be freed by free()
         } scan_file;

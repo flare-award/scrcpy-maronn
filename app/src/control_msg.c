@@ -190,6 +190,9 @@ sc_control_msg_serialize(const struct sc_control_msg *msg, uint8_t *buf) {
             sc_write16be(&buf[1], msg->resize_display.width);
             sc_write16be(&buf[3], msg->resize_display.height);
             return 5;
+        case SC_CONTROL_MSG_TYPE_SET_MAX_FPS:
+            sc_write16be(&buf[1], msg->set_max_fps.fps);
+            return 3;
         case SC_CONTROL_MSG_TYPE_SCAN_FILE: {
             size_t len = write_string(&buf[1], msg->scan_file.path,
                                       SC_CONTROL_MSG_SCAN_FILE_PATH_MAX_LENGTH);
@@ -339,6 +342,9 @@ sc_control_msg_log(const struct sc_control_msg *msg) {
             break;
         case SC_CONTROL_MSG_TYPE_RESET_VIDEO:
             LOG_CMSG("reset video");
+            break;
+        case SC_CONTROL_MSG_TYPE_SET_MAX_FPS:
+            LOG_CMSG("set max fps: %" PRIu16, msg->set_max_fps.fps);
             break;
         case SC_CONTROL_MSG_TYPE_CAMERA_SET_TORCH:
             LOG_CMSG("camera set torch %s",

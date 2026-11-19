@@ -11,7 +11,11 @@ See the dedicated [camera](camera.md) page.
 
 ## Size
 
-By default, scrcpy attempts to mirror at the Android device resolution.
+For ordinary playback of a mirrored screen, this fork limits the **long edge to
+1600 pixels** by default, without upscaling. This reduces the number of pixels
+the phone must compose and encode, without changing its own display resolution.
+Use `scrcpy -m0` for native resolution. Recording, V4L2, camera capture and
+`--new-display` retain their previous size defaults.
 
 It might be useful to mirror at a lower definition to increase performance. To
 limit both width and height to some maximum value (here 1024):
@@ -60,9 +64,25 @@ The capture frame rate can be limited:
 
 ```bash
 scrcpy --max-fps=15
+scrcpy -m1280 -b6M --max-fps=90 --print-fps  # high-refresh phone, lighter stream
+scrcpy -m1024 -b3M --max-fps=30              # less load for a demanding game
 ```
 
-The actual capture frame rate may be printed to the console:
+While mirroring with control enabled, press **MOD+1/2/3/4** (number row) to
+select 30/60/90/120 fps, or **MOD+0** for unlimited. This restarts only video
+capture/encoding, not the app, audio or connection. It does not alter the size
+or bit rate. Use `--max-fps` for a different startup limit (including fractional
+values), or in read-only sessions. The encoder cap is officially supported since
+Android 10; earlier versions may ignore it.
+
+On Android 14+, an explicit positive limit also requests the corresponding
+refresh rate for the virtual display used to mirror an existing screen. This is
+a hint, not a change to the physical refresh rate or an app FPS override. If the
+request is unavailable, scrcpy falls back to normal mirroring. The device's
+active refresh mode, the app, encoder, transport and PC all affect the result.
+
+To measure rendered frames (and frames skipped by the client) while scrolling,
+print the FPS counter to the console:
 
 ```bash
 scrcpy --print-fps

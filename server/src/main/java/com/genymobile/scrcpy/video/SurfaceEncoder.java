@@ -42,7 +42,6 @@ public class SurfaceEncoder implements AsyncProcessor {
     private final List<CodecOption> codecOptions;
     private final int videoBitRate;
     private final int maxSize;
-    private final float maxFps;
     private final boolean downsizeOnError;
     private final int minSizeAlignment;
     private final boolean ignoreVideoEncoderConstraints;
@@ -53,7 +52,7 @@ public class SurfaceEncoder implements AsyncProcessor {
     private Thread thread;
     private final AtomicBoolean stopped = new AtomicBoolean();
 
-    private final CaptureControl captureControl = new CaptureControl();
+    private final CaptureControl captureControl;
 
     private VideoConstraints videoConstraints;
 
@@ -62,7 +61,7 @@ public class SurfaceEncoder implements AsyncProcessor {
         this.streamer = streamer;
         this.videoBitRate = options.getVideoBitRate();
         this.maxSize = options.getMaxSize();
-        this.maxFps = options.getMaxFps();
+        this.captureControl = capture.getCaptureControl();
         this.codecOptions = options.getVideoCodecOptions();
         this.encoderName = options.getVideoEncoder();
         this.downsizeOnError = options.getDownsizeOnError();
@@ -73,7 +72,6 @@ public class SurfaceEncoder implements AsyncProcessor {
     private void streamCapture() throws IOException, ConfigurationException {
         Codec codec = streamer.getCodec();
         MediaCodec mediaCodec = createMediaCodec(codec, encoderName);
-        MediaFormat format = createFormat(codec.getMimeType(), videoBitRate, maxFps, codecOptions);
 
         MediaCodecInfo.VideoCapabilities caps;
         int alignment;
@@ -94,7 +92,7 @@ public class SurfaceEncoder implements AsyncProcessor {
         // Do not constrain by the declared video encoder capabilities before encoding actually fails
         videoConstraints = new VideoConstraints(maxSize, alignment, null);
 
-        capture.init(captureControl, videoConstraints);
+        capture.init(videoConstraints);
 
         try {
             boolean alive;
@@ -117,6 +115,10 @@ public class SurfaceEncoder implements AsyncProcessor {
                 capture.prepare();
                 Size size = capture.getSize();
 
+                // Rebuild the format on each session: switching back to unlimited
+                // must remove max-fps-to-encoder, not leave the old key in place.
+                float maxFps = captureControl.getMaxFps();
+                MediaFormat format = createFormat(codec.getMimeType(), videoBitRate, maxFps, codecOptions);
                 format.setInteger(MediaFormat.KEY_WIDTH, size.getWidth());
                 format.setInteger(MediaFormat.KEY_HEIGHT, size.getHeight());
 
@@ -127,7 +129,7 @@ public class SurfaceEncoder implements AsyncProcessor {
                     mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
                     surface = mediaCodec.createInputSurface();
 
-                    capture.start(surface);
+                    capture.start(surface, maxFps);
                     captureStarted = true;
 
                     mediaCodec.start();

@@ -366,7 +366,10 @@ Valid codec ids for _audio_ streams are:
  - `"raw"` (`0x00726177`)
 
 For the _video_ stream, a _session packet_ (12 bytes) is sent for each capture
-session (a session changes when the device rotates):
+session (e.g. when the device rotates or the capture FPS limit changes).
+This fork's `SET_MAX_FPS` control message is type `24` followed by a big-endian
+`u16` limit (zero removes the cap). A changed limit starts a new video session
+on the same socket; audio and control continue. The session packet layout is:
 
 ```
      byte 0   byte 1   byte 2   byte 3

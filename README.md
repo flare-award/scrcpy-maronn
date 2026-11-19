@@ -1,19 +1,47 @@
-# scrcpy-maronn (v5.0.3)
+# scrcpy-maronn (v5.1.0)
 
 <img src="app/data/scrcpy.svg" width="128" height="128" alt="scrcpy" align="right" />
 
 **scrcpy-maronn** — форк [Genymobile/scrcpy](https://github.com/Genymobile/scrcpy).
 Владелец и репозиторий этой версии: [flare-award/scrcpy-maronn](https://github.com/flare-award/scrcpy-maronn).
-Все изменения выпуска v5.0.3 относительно оригинального scrcpy v5.0.1 внёс
+Все изменения выпуска v5.1.0 относительно оригинального scrcpy v5.0.1 внёс
 ИИ-агент Arena.ai по просьбе владельца. Авторы исходного scrcpy — Genymobile и
 Romain Vimont. Сборки форка не являются официальными релизами Genymobile.
 
-**[Скачать scrcpy-maronn v5.0.3](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.3)** ·
-[Windows 64-бит (ZIP)](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-win64-v5.0.3.zip).
+**[Скачать scrcpy-maronn v5.1.0](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.1.0)** ·
+[Windows 64-бит (ZIP)](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-win64-v5.1.0.zip).
 Распакуйте архив целиком и запустите `scrcpy.exe`.
-[Контрольные суммы SHA-256](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/SHA256SUMS.txt).
+[Контрольные суммы SHA-256](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/SHA256SUMS.txt).
 
-## Что нового в v5.0.3
+## Если телефон тормозит или нужен режим 90 FPS
+
+На Windows распакуйте ZIP и откройте **`scrcpy-fps.bat`**. Для телефона с
+экраном 90 Гц начните с **3**: до 90 кадров/с, длинная сторона 1280 пикселей,
+6 Мбит/с. Звук остаётся включён. Из терминала на любой платформе это:
+
+```bash
+scrcpy -m1280 -b6M --max-fps=90 --print-fps
+```
+
+- **Не перезапуская scrcpy:** в окне нажмите левый **Alt+1 / 2 / 3 / 4** —
+  лимит захвата 30 / 60 / 90 / 120 FPS соответственно. **Alt+0** убирает
+  лимит, **Alt+i** включает или выключает счётчик в консоли. Меняется только
+  FPS; при перенастройке видео возможна короткая пауза. Вместо Alt можно
+  использовать свой `--shortcut-mod`. Цифры — из верхнего ряда клавиатуры.
+- **Если лагает сам телефон**, начните с **1** в меню (1024 пикселя, до 30 FPS)
+  или **2** (1280, до 60). Обычный запуск `scrcpy` теперь ограничивает длинную
+  сторону потока 1600 пикселями: на экране 1080×2400 кодируется примерно
+  720×1600, а разрешение телефона не меняется. `scrcpy -m0` вернёт прежнюю
+  детализацию. У записи и камеры прежние значения по умолчанию.
+- **90 Гц ≠ гарантированные 90 FPS.** На Android 14+ при выборе лимита scrcpy
+  запрашивает эту частоту и у виртуального дисплея зеркала. Если прошивка не
+  принимает запрос, захват продолжается обычным способом. На старых Android
+  остаётся ограничение кодировщика (официально с Android 10). Проверьте цифры
+  при прокрутке: неподвижный чат и видео 30 FPS не обязаны выдавать 90 кадров.
+  Для видимых 90 нужны соответствующий режим приложения и монитор ПК с
+  выбранной частотой не ниже 90 Гц. При рывках по Wi-Fi сравните с USB.
+
+## Русский ввод и полноэкранный режим (с v5.0.3)
 
 - **Русская раскладка компьютера.** Запустите `scrcpy` без параметров, откройте
   поле ввода на телефоне и переключите EN → RU привычным сочетанием на ПК.
@@ -48,7 +76,7 @@ It focuses on:
 
  - **lightness**: native, displays only the device screen
  - **performance**: 30~120fps, depending on the device
- - **quality**: 1920×1080 or above
+ - **quality**: native display resolution when requested (`-m0`)
  - **low latency**: [35~70ms][lowlatency]
  - **low startup time**: ~1 second to display the first image
  - **non-intrusiveness**: nothing is left installed on the Android device

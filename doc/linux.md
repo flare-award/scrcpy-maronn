@@ -6,10 +6,10 @@
 
 Download and extract the archive for your computer:
 
- - [scrcpy-linux-x86_64-v5.0.3.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/scrcpy-linux-x86_64-v5.0.3.tar.gz) (x86_64)<br>
-   <sub>SHA-256: `a34b06bb100f620106920bc65bd357bbafb9e31a106dbbe23e5794c766bf58c9`</sub>
+ - [scrcpy-linux-x86_64-v5.1.0.tar.gz](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-linux-x86_64-v5.1.0.tar.gz) (x86_64)<br>
+   <sub>SHA-256: `edb35abb19f267f1e314e7e9dab72ea06ae7b782926099b76e6dfa127ddf8db8`</sub>
 
-[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.0.3) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.0.3/SHA256SUMS.txt).
+[Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.1.0) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/SHA256SUMS.txt).
 
 
 ### From your package manager (upstream scrcpy, not this fork)
@@ -44,7 +44,7 @@ Then clone the repo and execute the installation script
 ([source](/install_release.sh)):
 
 ```bash
-git clone --branch v5.0.3 https://github.com/flare-award/scrcpy-maronn
+git clone --branch v5.1.0 https://github.com/flare-award/scrcpy-maronn
 cd scrcpy-maronn
 ./install_release.sh
 ```
@@ -53,7 +53,7 @@ When a new release is out, select its tag and reinstall:
 
 ```bash
 git fetch --tags
-git checkout v5.0.3  # replace with the new version tag
+git checkout v5.1.0  # replace with the new version tag
 ./install_release.sh
 ```
 

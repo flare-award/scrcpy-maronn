@@ -6,7 +6,7 @@ archive in PowerShell, compare the output of the following command with its
 entry in `SHA256SUMS.txt`:
 
 ```powershell
-Get-FileHash .\scrcpy-win64-v5.0.3.zip -Algorithm SHA256
+Get-FileHash .\scrcpy-win64-v5.1.0.zip -Algorithm SHA256
 ```
 
 The fork does **not** publish signatures from the upstream maintainer. The

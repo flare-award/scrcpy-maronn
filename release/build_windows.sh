@@ -69,6 +69,8 @@ cp "$WINXX_BUILD_DIR"/app/scrcpy.exe "$WINXX_BUILD_DIR/dist/"
 cp app/data/scrcpy-noconsole.vbs "$WINXX_BUILD_DIR/dist/"
 cp app/data/scrcpy.png "$WINXX_BUILD_DIR/dist/"
 cp app/data/disconnected.png "$WINXX_BUILD_DIR/dist/"
+# The picker is plain ASCII; emit DOS line endings even when cross-built.
+sed 's/\r$//;s/$/\r/' app/data/scrcpy-fps.bat > "$WINXX_BUILD_DIR/dist/scrcpy-fps.bat"
 cp app/data/open_a_terminal_here.bat "$WINXX_BUILD_DIR/dist/"
 cp LICENSE "$WINXX_BUILD_DIR/dist/LICENSE.txt"
 cp "$DEPS_INSTALL_DIR"/bin/*.dll "$WINXX_BUILD_DIR/dist/"

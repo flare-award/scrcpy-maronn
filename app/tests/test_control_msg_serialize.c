@@ -527,6 +527,19 @@ static void test_serialize_resize_display(void) {
     assert(!memcmp(buf, expected, sizeof(expected)));
 }
 
+static void test_serialize_set_max_fps(void) {
+    struct sc_control_msg msg = {
+        .type = SC_CONTROL_MSG_TYPE_SET_MAX_FPS,
+        .set_max_fps.fps = 90,
+    };
+    uint8_t buf[SC_CONTROL_MSG_MAX_SIZE];
+    assert(sc_control_msg_serialize(&msg, buf) == 3);
+    assert(!memcmp(buf, (uint8_t[]) {24, 0, 90}, 3));
+    msg.set_max_fps.fps = 0;
+    assert(sc_control_msg_serialize(&msg, buf) == 3);
+    assert(!memcmp(buf, (uint8_t[]) {24, 0, 0}, 3));
+}
+
 static void test_serialize_scan_file(void) {
     struct sc_control_msg msg = {
         .type = SC_CONTROL_MSG_TYPE_SCAN_FILE,
@@ -578,5 +591,6 @@ int main(int argc, char *argv[]) {
     test_serialize_camera_zoom_out();
     test_serialize_resize_display();
     test_serialize_scan_file();
+    test_serialize_set_max_fps();
     return 0;
 }
