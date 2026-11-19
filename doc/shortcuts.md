@@ -53,6 +53,8 @@ _<kbd>[Super]</kbd> is typically the <kbd>Windows</kbd> or <kbd>Cmd</kbd> key._
  | Synchronize clipboards and paste⁵           | <kbd>MOD</kbd>+<kbd>v</kbd>
  | Inject computer clipboard text              | <kbd>MOD</kbd>+<kbd>Shift</kbd>+<kbd>v</kbd>
  | Open keyboard settings (HID keyboard only)  | <kbd>MOD</kbd>+<kbd>k</kbd>
+ | Set screen capture to 30 / 60 / 90 / 120 fps | <kbd>MOD</kbd>+<kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd> / <kbd>4</kbd>
+ | Remove screen capture FPS limit             | <kbd>MOD</kbd>+<kbd>0</kbd>
  | Enable/disable FPS counter (on stdout)      | <kbd>MOD</kbd>+<kbd>i</kbd>
  | Pinch-to-zoom/rotate                        | <kbd>Ctrl</kbd>+_click-and-move_
  | Tilt vertically (slide with 2 fingers)      | <kbd>Shift</kbd>+_click-and-move_

@@ -2,10 +2,10 @@
 set -e
 
 BUILDDIR=build-auto
-VERSION=v5.0.3
+VERSION=v5.1.0
 RELEASE_URL="https://github.com/flare-award/scrcpy-maronn/releases/download/$VERSION"
 SERVER="scrcpy-server-$VERSION"
-PREBUILT_SERVER_SHA256=4d91f2b5ff27f5c14f83d70365792a77d93d95e1c0bc3857c97b4aefac3a0c36
+PREBUILT_SERVER_SHA256=69fb269d901ac9c53d5d5c751f2b398fea1bae0c014b49d4b39b716a0b2bf24a
 
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT
