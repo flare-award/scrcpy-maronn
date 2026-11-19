@@ -6,9 +6,12 @@
 
 Download and extract the archive for your computer:
 
- - [scrcpy-win64-v5.1.0.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-win64-v5.1.0.zip) (64-bit)
- - [scrcpy-win32-v5.1.0.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-win32-v5.1.0.zip) (32-bit)
- - [scrcpy-winarm64-v5.1.0.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-winarm64-v5.1.0.zip) (ARM 64-bit)
+ - [scrcpy-win64-v5.1.0.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-win64-v5.1.0.zip) (64-bit)<br>
+   <sub>SHA-256: `999278614b486d3b17b7324cde3b7d676d92dd8d2d3553e825306fecd996b7f6`</sub>
+ - [scrcpy-win32-v5.1.0.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-win32-v5.1.0.zip) (32-bit)<br>
+   <sub>SHA-256: `c8799078bbc2764d0479b377b303c601ba008c12e15964633ac5866388d8ff70`</sub>
+ - [scrcpy-winarm64-v5.1.0.zip](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-winarm64-v5.1.0.zip) (ARM 64-bit)<br>
+   <sub>SHA-256: `35d28407e1c38b872d23a315e0999610dd0041d12172384f46e644d3de947b7e`</sub>
 
 [Release notes](https://github.com/flare-award/scrcpy-maronn/releases/tag/v5.1.0) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/SHA256SUMS.txt).
 
