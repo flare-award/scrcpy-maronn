@@ -238,7 +238,7 @@ install` must be run as root)._
 #### Option 2: Use prebuilt server
 
  - [scrcpy-server-v5.1.0](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/scrcpy-server-v5.1.0) · [SHA-256 checksums](https://github.com/flare-award/scrcpy-maronn/releases/download/v5.1.0/SHA256SUMS.txt)<br>
-   <sub>SHA-256: `69fb269d901ac9c53d5d5c751f2b398fea1bae0c014b49d4b39b716a0b2bf24a`</sub>
+   <sub>SHA-256: `6e429868d5a2ac3743b7ea5c0d82a3bd4f35098f9d79de3f7eadd69a8504d0b5`</sub>
 
 Download the prebuilt server somewhere, and specify its path during the Meson
 configuration:
