@@ -14,6 +14,9 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            // The installer pins this unsigned APK before the docs/checksum
+            // commit. Do not change its bytes solely because HEAD changed.
+            vcsInfo.include = false
         }
     }
     buildFeatures {

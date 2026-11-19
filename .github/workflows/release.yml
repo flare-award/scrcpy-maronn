@@ -68,7 +68,11 @@ jobs:
         run: |
           release/build_server.sh
           checksum=$(sed -n 's/^PREBUILT_SERVER_SHA256=//p' install_release.sh)
-          printf '%s  %s\n' "$checksum" release/work/build-server/server/scrcpy-server | sha256sum --check --strict
+          server=release/work/build-server/server/scrcpy-server
+          if ! printf '%s  %s\n' "$checksum" "$server" | sha256sum --check --strict; then
+            echo "::error::Release server differs from the installer pin $checksum: $(sha256sum "$server")"
+            exit 1
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
